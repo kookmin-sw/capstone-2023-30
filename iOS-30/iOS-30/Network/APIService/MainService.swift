@@ -10,6 +10,6 @@ import Foundation
 
 struct MainService: MainServiceable {
     func postImage() async throws {
-        <#code#>
+        print("dd")
     }
 }
