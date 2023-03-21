@@ -63,6 +63,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B5C0BDCD29CA151300372709 /* Filter */ = {
+			isa = PBXGroup;
+			children = (
+				B5C0BDC829C9F8CE00372709 /* FilterViewController.swift */,
+			);
+			path = Filter;
+			sourceTree = "<group>";
+		};
 		B5E458F429BCDEA600237B1F = {
 			isa = PBXGroup;
 			children = (
@@ -115,8 +123,8 @@
 		B5E459E629C1D39300237B1F /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
+				B5C0BDCD29CA151300372709 /* Filter */,
 				B5E459EF29C1D61500237B1F /* Main */,
-				B5C0BDC829C9F8CE00372709 /* FilterViewController.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
