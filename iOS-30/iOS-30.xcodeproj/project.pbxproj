@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		B5C0BDC929C9F8CE00372709 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C0BDC829C9F8CE00372709 /* FilterViewController.swift */; };
-		B5C0BDCB29CA03D100372709 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = B5C0BDCA29CA03D100372709 /* .gitkeep */; };
 		B5E4590129BCDEA600237B1F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E4590029BCDEA600237B1F /* AppDelegate.swift */; };
 		B5E4590329BCDEA600237B1F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E4590229BCDEA600237B1F /* SceneDelegate.swift */; };
 		B5E4590529BCDEA600237B1F /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E4590429BCDEA600237B1F /* PhotoViewController.swift */; };
@@ -31,7 +30,6 @@
 
 /* Begin PBXFileReference section */
 		B5C0BDC829C9F8CE00372709 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
-		B5C0BDCA29CA03D100372709 /* .gitkeep */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
 		B5E458FD29BCDEA600237B1F /* iOS-30.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS-30.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5E4590029BCDEA600237B1F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B5E4590229BCDEA600237B1F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -65,14 +63,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B5C0BDC529C9F00100372709 /* UIComponents */ = {
-			isa = PBXGroup;
-			children = (
-				B5C0BDCA29CA03D100372709 /* .gitkeep */,
-			);
-			path = UIComponents;
-			sourceTree = "<group>";
-		};
 		B5E458F429BCDEA600237B1F = {
 			isa = PBXGroup;
 			children = (
@@ -102,7 +92,6 @@
 		B5E459E429C1D38400237B1F /* Global */ = {
 			isa = PBXGroup;
 			children = (
-				B5C0BDC529C9F00100372709 /* UIComponents */,
 				B5E459EE29C1D59C00237B1F /* Supports */,
 				B5E459ED29C1D58100237B1F /* Resource */,
 				B5E459EA29C1D52600237B1F /* Extension */,
@@ -282,7 +271,6 @@
 				B5E45A0029C1DDA400237B1F /* .gitkeep in Resources */,
 				B5E4590D29BCDEA800237B1F /* LaunchScreen.storyboard in Resources */,
 				B5E4590A29BCDEA800237B1F /* Assets.xcassets in Resources */,
-				B5C0BDCB29CA03D100372709 /* .gitkeep in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
