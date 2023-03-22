@@ -13,7 +13,6 @@
 		B5C0BDD429CB189000372709 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C0BDD329CB189000372709 /* MainViewController.swift */; };
 		B5E4590129BCDEA600237B1F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E4590029BCDEA600237B1F /* AppDelegate.swift */; };
 		B5E4590329BCDEA600237B1F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E4590229BCDEA600237B1F /* SceneDelegate.swift */; };
-		B5E4590529BCDEA600237B1F /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E4590429BCDEA600237B1F /* PhotoViewController.swift */; };
 		B5E4590A29BCDEA800237B1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5E4590929BCDEA800237B1F /* Assets.xcassets */; };
 		B5E4590D29BCDEA800237B1F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5E4590B29BCDEA800237B1F /* LaunchScreen.storyboard */; };
 		B5E459E929C1D41500237B1F /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E459E829C1D41500237B1F /* BaseViewController.swift */; };
@@ -39,7 +38,6 @@
 		B5E458FD29BCDEA600237B1F /* iOS-30.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS-30.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5E4590029BCDEA600237B1F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B5E4590229BCDEA600237B1F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		B5E4590429BCDEA600237B1F /* PhotoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoViewController.swift; sourceTree = "<group>"; };
 		B5E4590929BCDEA800237B1F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B5E4590C29BCDEA800237B1F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B5E4590E29BCDEA800237B1F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -183,7 +181,6 @@
 		B5E459EF29C1D61500237B1F /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				B5E4590429BCDEA600237B1F /* PhotoViewController.swift */,
 				B5C0BDD329CB189000372709 /* MainViewController.swift */,
 			);
 			path = Main;
@@ -308,7 +305,6 @@
 			files = (
 				B5AEB24929CB5C1300B95B04 /* UIViewController+Extension.swift in Sources */,
 				B5E459F529C1D96000237B1F /* MainService.swift in Sources */,
-				B5E4590529BCDEA600237B1F /* PhotoViewController.swift in Sources */,
 				B5E45A0429C1DECF00237B1F /* NetworkRequest.swift in Sources */,
 				B5C0BDC929C9F8CE00372709 /* FilterViewController.swift in Sources */,
 				B5E459E929C1D41500237B1F /* BaseViewController.swift in Sources */,
