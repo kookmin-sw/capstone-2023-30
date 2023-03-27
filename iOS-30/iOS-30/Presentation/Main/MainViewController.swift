@@ -191,9 +191,6 @@ final class MainViewController: UIViewController {
                 let granted = await AVCaptureDevice.requestAccess(for: .video)
                 if granted {
                     setUpCamera()
-//                    DispatchQueue.main.async { [weak self] in
-//                        self?.setUpCamera()
-//                    }
                 }
             case .restricted:
                 break
@@ -234,6 +231,21 @@ final class MainViewController: UIViewController {
             }
         }
     }
+
+    private func camera(in position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+        let discoverySession = AVCaptureDevice.DiscoverySession(
+            deviceTypes: [.builtInDualCamera, .builtInWideAngleCamera],
+            mediaType: .video,
+            position: .unspecified
+        )
+
+        let devices = discoverySession.devices
+        guard !devices.isEmpty else { fatalError("Missing Capture Devices") }
+
+        return devices.first { device in
+            device.position == position
+        }
+    }
 }
 
 // MARK: Obj-C
@@ -248,7 +260,24 @@ extension MainViewController {
     }
 
     @objc private func didTapChangeButton() {
-        print("Camera 전환 !")
+        session?.beginConfiguration()
+        guard let currentInput = session?.inputs.first as? AVCaptureDeviceInput
+        else {
+            return
+        }
+        session?.removeInput(currentInput)
+
+        guard let newCameraDevice = currentInput.device.position == .back ? camera(in: .front) : camera(in: .back)
+        else {
+            print("newCameraDevice")
+            return
+        }
+        guard let newVideoInput = try? AVCaptureDeviceInput(device: newCameraDevice) else {
+            print("newVideoInput")
+            return
+        }
+        session?.addInput(newVideoInput)
+        session?.commitConfiguration()
     }
 
     @objc private func didTapFilterButton() {
