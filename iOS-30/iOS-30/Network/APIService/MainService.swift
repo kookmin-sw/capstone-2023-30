@@ -9,7 +9,18 @@ import Foundation
 
 
 struct MainService: MainServiceable {
-    func postImage() async throws {
-        print("dd")
+    private let apiService: Requestable
+    private let environment: APIEnvironment
+
+    init(apiService: Requestable, environment: APIEnvironment) {
+        self.apiService = apiService
+        self.environment = environment
+    }
+
+    func postImage(imageSize: (Int, Int), name: String, body: Data?) async throws -> Int? {
+        let request = MainEndPoint
+            .postImage(imageSize: imageSize, name: name, body: body)
+            .createRequest(environment: .develop)
+        return try await self.apiService.request(request)
     }
 }

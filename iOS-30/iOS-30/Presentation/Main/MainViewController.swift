@@ -167,8 +167,6 @@ final class MainViewController: UIViewController {
             albumButton.widthAnchor.constraint(equalTo: albumButton.heightAnchor)
         ]
         NSLayoutConstraint.activate(albumConstraint)
-
-//        changeDirectionButton.
     }
 
     private func configUI() {
@@ -248,7 +246,7 @@ final class MainViewController: UIViewController {
     }
 }
 
-// MARK: Obj-C
+// MARK: Obj-C Methods
 
 extension MainViewController {
     @objc private func didTapShutterButton() {
@@ -314,10 +312,55 @@ extension MainViewController: AVCapturePhotoCaptureDelegate {
 
         session?.stopRunning()
 
-        let imageView = UIImageView(image: image)
-        imageView.contentMode = .scaleAspectFill
-        imageView.frame = view.bounds
-        view.addSubview(imageView)
+        // 네트워크 통신 시작 ! 보내기 비동기 보내고 lottie 돌리기
+        let width = Int(image.size.width)
+        let height = Int(image.size.height)
+        print(width, height)
+        guard let url = URL(string: "https://3qt14ezkgb.execute-api.ap-northeast-2.amazonaws.com/img/test/request/\(width)x\(height)?img_name=\(arc4random()).jpeg") else {
+            print("url fail")
+            return
+
+        }
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
+
+        guard let jpegImage = image.jpegData(compressionQuality: 0.5) else {
+            print("jpeg transform fail")
+            return
+        }
+
+        Task {
+            do {
+                let (data, response) = try await URLSession
+                    .shared
+                    .upload(for: urlRequest, from: jpegImage)
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode,
+                      responseCode == 200 else {
+                    print("response !!!!")
+                    print(response)
+                    if let error {
+                        print("Error !!!!")
+                        print(error)
+                    }
+                    return
+                }
+                let decoder = JSONDecoder()
+                let baseModelData = try decoder.decode(
+                    BaseModel<Int>.self,
+                    from: data
+                )
+                print(baseModelData)
+                LoadingIndicator.hideLoading()
+                self.view.window?.rootViewController = SceneViewController()
+                self.view.window?.makeKeyAndVisible()
+
+            } catch {
+                print(error)
+            }
+        }
+
+        LoadingIndicator.showLoading()
 
     }
 }

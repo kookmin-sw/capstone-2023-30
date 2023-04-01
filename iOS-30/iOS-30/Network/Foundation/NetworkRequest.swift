@@ -9,10 +9,10 @@ import Foundation
 
 struct NetworkRequest {
     let httpMethod: HttpMethod
-    let headers: [String: String]?
-    let requestTimeout: Float?
     let url: String
+    let headers: [String: String]?
     let body: Data?
+    let requestTimeout: Float?
 
     func buildURLRequest(with url: URL) -> URLRequest {
         var urlRequest = URLRequest(url: url)
