@@ -8,5 +8,5 @@
 import Foundation
 
 protocol MainServiceable {
-    func postImage() async throws -> Void
+    func postImage(imageSize: (Int, Int), name: String, body: Data?) async throws -> Int?
 }

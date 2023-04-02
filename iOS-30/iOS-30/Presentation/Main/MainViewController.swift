@@ -167,8 +167,6 @@ final class MainViewController: UIViewController {
             albumButton.widthAnchor.constraint(equalTo: albumButton.heightAnchor)
         ]
         NSLayoutConstraint.activate(albumConstraint)
-
-//        changeDirectionButton.
     }
 
     private func configUI() {
@@ -191,9 +189,6 @@ final class MainViewController: UIViewController {
                 let granted = await AVCaptureDevice.requestAccess(for: .video)
                 if granted {
                     setUpCamera()
-//                    DispatchQueue.main.async { [weak self] in
-//                        self?.setUpCamera()
-//                    }
                 }
             case .restricted:
                 break
@@ -234,9 +229,24 @@ final class MainViewController: UIViewController {
             }
         }
     }
+
+    private func camera(in position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+        let discoverySession = AVCaptureDevice.DiscoverySession(
+            deviceTypes: [.builtInDualCamera, .builtInWideAngleCamera],
+            mediaType: .video,
+            position: .unspecified
+        )
+
+        let devices = discoverySession.devices
+        guard !devices.isEmpty else { fatalError("Missing Capture Devices") }
+
+        return devices.first { device in
+            device.position == position
+        }
+    }
 }
 
-// MARK: Obj-C
+// MARK: Obj-C Methods
 
 extension MainViewController {
     @objc private func didTapShutterButton() {
@@ -248,7 +258,24 @@ extension MainViewController {
     }
 
     @objc private func didTapChangeButton() {
-        print("Camera 전환 !")
+        session?.beginConfiguration()
+        guard let currentInput = session?.inputs.first as? AVCaptureDeviceInput
+        else {
+            return
+        }
+        session?.removeInput(currentInput)
+
+        guard let newCameraDevice = currentInput.device.position == .back ? camera(in: .front) : camera(in: .back)
+        else {
+            print("newCameraDevice")
+            return
+        }
+        guard let newVideoInput = try? AVCaptureDeviceInput(device: newCameraDevice) else {
+            print("newVideoInput")
+            return
+        }
+        session?.addInput(newVideoInput)
+        session?.commitConfiguration()
     }
 
     @objc private func didTapFilterButton() {
@@ -285,10 +312,55 @@ extension MainViewController: AVCapturePhotoCaptureDelegate {
 
         session?.stopRunning()
 
-        let imageView = UIImageView(image: image)
-        imageView.contentMode = .scaleAspectFill
-        imageView.frame = view.bounds
-        view.addSubview(imageView)
+        // 네트워크 통신 시작 ! 보내기 비동기 보내고 lottie 돌리기
+        let width = Int(image.size.width)
+        let height = Int(image.size.height)
+        print(width, height)
+        guard let url = URL(string: "https://3qt14ezkgb.execute-api.ap-northeast-2.amazonaws.com/img/test/request/\(width)x\(height)?img_name=\(arc4random()).jpeg") else {
+            print("url fail")
+            return
+
+        }
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
+
+        guard let jpegImage = image.jpegData(compressionQuality: 0.5) else {
+            print("jpeg transform fail")
+            return
+        }
+
+        Task {
+            do {
+                let (data, response) = try await URLSession
+                    .shared
+                    .upload(for: urlRequest, from: jpegImage)
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode,
+                      responseCode == 200 else {
+                    print("response !!!!")
+                    print(response)
+                    if let error {
+                        print("Error !!!!")
+                        print(error)
+                    }
+                    return
+                }
+                let decoder = JSONDecoder()
+                let baseModelData = try decoder.decode(
+                    BaseModel<Int>.self,
+                    from: data
+                )
+                print(baseModelData)
+                LoadingIndicator.hideLoading()
+                self.view.window?.rootViewController = SceneViewController()
+                self.view.window?.makeKeyAndVisible()
+
+            } catch {
+                print(error)
+            }
+        }
+
+        LoadingIndicator.showLoading()
 
     }
 }
