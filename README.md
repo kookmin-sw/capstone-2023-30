@@ -18,9 +18,18 @@ In our projects, we develop an app where the input is a photo but the output is 
   
   
 # 소개영상
+## Model Output
+https://user-images.githubusercontent.com/60292150/229363297-3fdd4d6f-d832-4b02-ae91-5bd3e0e94969.mp4
 
-준비중입니다.  
-  
+---
+
+## iOS
+### 시연 영상
+https://user-images.githubusercontent.com/60292150/229363755-604160b0-ceaf-42ac-a765-b999c3dc5bc7.mp4
+
+
+
+
   
 # 팀 소개  
 
