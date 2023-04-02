@@ -19,11 +19,18 @@ In our projects, we develop an app where the input is a photo but the output is 
   
 # 소개영상
 ## Model Output
-https://user-images.githubusercontent.com/60292150/229363297-3fdd4d6f-d832-4b02-ae91-5bd3e0e94969.mp4
+
+https://user-images.githubusercontent.com/60292150/229364413-b2daf76c-d193-478a-aa7e-c2877de680df.mp4
+
 
 ---
 
 ## iOS
+
+|    구현 내용    |   스크린샷   |
+| :-------------: | :----------: |
+| Model Output .ply | <img width="1218" alt="image" src="https://user-images.githubusercontent.com/60292150/229364361-6c98b412-be77-4858-a345-c72e5f45806f.png"> |
+| 3D View | <img width="442" alt="image" src="https://user-images.githubusercontent.com/60292150/229364286-6115c1b8-2edf-402a-bfba-3a8d8c5d1e1e.png"> |
 ### 시연 영상
 https://user-images.githubusercontent.com/60292150/229363755-604160b0-ceaf-42ac-a765-b999c3dc5bc7.mp4
 
