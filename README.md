@@ -18,7 +18,7 @@ Sight is the most powerful sense among the five senses. There are several attemp
   
 # 소개영상
 
-미완성입니다.  
+준비중입니다.  
   
   
 # 팀 소개  
@@ -31,4 +31,4 @@ Sight is the most powerful sense among the five senses. There are several attemp
   
 # 사용법
 
-미완성입니다.
+준비중입니다.
