@@ -26,7 +26,7 @@ In our projects, we develop an app where the input is a photo but the output is 
 
 | AI<img src="https://user-images.githubusercontent.com/60292150/229362408-d0f38744-db45-441f-bdac-236296a520d6.png" width="200" height="200"/> | AI<img src="https://user-images.githubusercontent.com/60292150/229362608-b4830839-6e89-4af8-a527-77412b8a3195.png" width="200" height="200"/> | iOS<img src="https://user-images.githubusercontent.com/60292150/229362438-c7191cc5-8670-468d-b0b9-2661489dc41f.png" width="200" height="200"/> | Backend<img src="https://user-images.githubusercontent.com/60292150/229362352-9fe23126-7ea8-42ca-83a6-c74f555ba475.png" width="200"  height="200" /> |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-|                          **신유송**                          |                          **이현지**                          |                          **김민재**                          |                          **임중혁**                          |
+|                          **신유송(xxxx3091)**                          |                          **이현지(xxxx0406)**                          |                          **김민재(xxxx2614)**                          |                          **임중혁(xxxx1683)**                          |
 |          [@shinyousong](https://github.com/shinyousong)          |           [@hyunji12](https://github.com/hyunji12)           |           [@ffalswo2](https://github.com/ffalswo2)            |         [@Angheng](https://github.com/Angheng)         |
 
 ---
