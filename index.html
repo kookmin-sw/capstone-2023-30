@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>capstone-2023-30</title>
+
+    <link rel="stylesheet" href="page_resource/stylesheets/styles.css">
+    <link rel="stylesheet" href="page_resource/stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>나만의 3D사진 만들기(가제)</h1>
+        <p>사용자의 사진을 3D로 복원 후 stylization까지!
+        </p>
+        <p class="view"><a href="https://github.com/kookmin-sw/capstone-2023-30">View the Project on GitHub <small>kookmin-sw/capstone-2023-30</small></a></p>
+        <ul>
+          <li><a href="https://github.com/kookmin-sw/capstone-2023-30/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/kookmin-sw/capstone-2023-30/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/kookmin-sw/capstone-2023-30">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1><b>프로젝트 소개</b></h1>
+        <hr>
+        <p>
+          우리 프로젝트의 결과물은 어플이다.
+          사용자가 어플에 사진을 입력하고 스타일을 선택하면,
+          그 사진을 3D로 복원하고 3D 결과물에 스타일을 입혀서
+          3D 결과물과 사용자가 상호작용할 수 있는 어플을 제작한다.
+        </p>
+        <br>
+
+        <h1><b>Abstract</b></h1>
+        <hr>
+        <p>
+          Sight is the most powerful sense among the five senses.
+          <br><br>
+          There are several attempts to achieve visual interaction between humans and systems in many fields.
+          <br><br>
+          In our projects, we develop an app where the input is a photo but the output is a 3D object users can interact with.
+        </p>
+        <br>
+
+        <h1><b>소개합니다!</b></h1>
+        <hr>
+        <p><em>사진 한장으로 만드는 자신만의 3D 입체 사진</em></p>
+
+        <img src="page_resource/imgs/moving_cat.gif" alt="moving cat">
+
+        <p>사용자에게 입력받은 하나의 사진을 3D로 변환 후, Stylization 해주는 어플리케이션입니다. 
+          기존에 없는 새로운 타입의 사진 편집 어플리케이션이며, 사용자로 하여금 새로움과 재미를 선사합니다. 
+          3D화 된 결과물에는 유명 화가의 화풍 혹은 그림 장르와 같은 여러 테마를 적용이 가능합니다.
+        </p>
+        <br>
+
+        <h1><b>어떤 기술로?</b></h1>
+        <hr>
+        <p>
+          <img src="page_resource/imgs/tech.png" alt="tech">
+          <h2>AI</h2>
+          <p>
+            <a href="https://shihmengli.github.io/3D-Photo-Inpainting/"><b>3D photo inpainting</b></a> 
+            : 물체에 의해 가려진 영역의 color와 depth 를 예측하여 얻은 color와 depth 값을 추출합니다.
+            <br><br>
+            <a href="https://pages.cs.wisc.edu/~fmu/style3d/"><b>3D photo Stylization</b></a> 
+              : 3D photo inpainting으로부터 얻은 color와 depth 정보를 통해 이미지를 3D화 후 stylization을 수행합니다.
+          </p>
+        </p>
+
+        <br>
+        
+        <h2>Front-End (IOS)</h2>
+          <p>
+            <b>AVFoundation</b> : 사진 촬영 및 필터 선택을 위한 customcameraview 구현에 사용합니다.
+            <br><br>
+            <b>SceneKit</b> : 3D모델로 구현화된 결과물을 화면에 출력하기 위해 사용합니다.
+          </p>
+
+        <br>
+        
+        <h2>Back-End</h2>
+          <p>
+            <b>AWS</b> : REST API 구현 및 EC2 인스턴스, S3 스토리지를 위해 사용합니다.
+            <br><br>
+            <b>Spring</b> : AI 모델 구동 서버 구축을 위해 사용합니다.
+          </p>
+        
+        <br><br>
+        
+        <h1><b>어떻게 쓰는지?</b></h1>
+        <hr>
+        <pre>미정
+          
+        </pre>
+        </section>
+        
+        <footer>
+          <p>The project belong to <br>
+            <a href="https://kookmin-sw.github.io/">2023 Kookmin Univ. Capstone project</a>
+          </p>
+          <p>
+            <small>
+              Hosted on GitHub Pages - Theme by <a href="https://github.com/orderedlist">orderedlist</a><br>
+              
+            </small>
+        </p>
+        </footer>
+  
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+  </body>
+</html>
