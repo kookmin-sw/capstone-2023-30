@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B58DD49B29F6565A000BD382 /* FilterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58DD49A29F6565A000BD382 /* FilterTableViewCell.swift */; };
+		B58DD49D29F65664000BD382 /* NSObject+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58DD49C29F65664000BD382 /* NSObject+.swift */; };
+		B58DD4A029F656D8000BD382 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = B58DD49F29F656D8000BD382 /* SnapKit */; };
+		B58DD4A329F656E1000BD382 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = B58DD4A229F656E1000BD382 /* Then */; };
+		B58DD4A629F657BD000BD382 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58DD4A529F657BD000BD382 /* Filter.swift */; };
+		B58DD4A829F65881000BD382 /* UIImage+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58DD4A729F65881000BD382 /* UIImage+.swift */; };
 		B598BF5A29D6BCA500FDEF04 /* EndPointable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B598BF5929D6BCA500FDEF04 /* EndPointable.swift */; };
 		B598BF5C29D6C08600FDEF04 /* APIEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B598BF5B29D6C08600FDEF04 /* APIEnvironment.swift */; };
 		B598BF6029D6D3F800FDEF04 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B598BF5F29D6D3F800FDEF04 /* LoadingIndicator.swift */; };
@@ -38,6 +44,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B58DD49A29F6565A000BD382 /* FilterTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterTableViewCell.swift; sourceTree = "<group>"; };
+		B58DD49C29F65664000BD382 /* NSObject+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSObject+.swift"; sourceTree = "<group>"; };
+		B58DD4A529F657BD000BD382 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
+		B58DD4A729F65881000BD382 /* UIImage+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
 		B598BF5929D6BCA500FDEF04 /* EndPointable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndPointable.swift; sourceTree = "<group>"; };
 		B598BF5B29D6C08600FDEF04 /* APIEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEnvironment.swift; sourceTree = "<group>"; };
 		B598BF5F29D6D3F800FDEF04 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
@@ -75,12 +85,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				B598BF6329D7D5B200FDEF04 /* Lottie in Frameworks */,
+				B58DD4A329F656E1000BD382 /* Then in Frameworks */,
+				B58DD4A029F656D8000BD382 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B58DD4A429F657B8000BD382 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				B58DD4A529F657BD000BD382 /* Filter.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		B5AEB24A29CB732F00B95B04 /* UIComponents */ = {
 			isa = PBXGroup;
 			children = (
@@ -95,6 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				B5C0BDC829C9F8CE00372709 /* FilterViewController.swift */,
+				B58DD49A29F6565A000BD382 /* FilterTableViewCell.swift */,
 			);
 			path = Filter;
 			sourceTree = "<group>";
@@ -118,9 +139,11 @@
 		B5E458FF29BCDEA600237B1F /* iOS-30 */ = {
 			isa = PBXGroup;
 			children = (
+				B58DD4A429F657B8000BD382 /* Model */,
 				B5E459E629C1D39300237B1F /* Presentation */,
 				B5E459E529C1D38C00237B1F /* Network */,
 				B5E459E429C1D38400237B1F /* Global */,
+				B58DD4A729F65881000BD382 /* UIImage+.swift */,
 			);
 			path = "iOS-30";
 			sourceTree = "<group>";
@@ -172,6 +195,7 @@
 			children = (
 				B5E459EB29C1D53400237B1F /* UIView+Extension.swift */,
 				B5AEB24829CB5C1300B95B04 /* UIViewController+Extension.swift */,
+				B58DD49C29F65664000BD382 /* NSObject+.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -270,6 +294,8 @@
 			name = "iOS-30";
 			packageProductDependencies = (
 				B598BF6229D7D5B200FDEF04 /* Lottie */,
+				B58DD49F29F656D8000BD382 /* SnapKit */,
+				B58DD4A229F656E1000BD382 /* Then */,
 			);
 			productName = "iOS-30";
 			productReference = B5E458FD29BCDEA600237B1F /* iOS-30.app */;
@@ -301,6 +327,8 @@
 			mainGroup = B5E458F429BCDEA600237B1F;
 			packageReferences = (
 				B598BF6129D7D5B200FDEF04 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				B58DD49E29F656D8000BD382 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				B58DD4A129F656E1000BD382 /* XCRemoteSwiftPackageReference "Then" */,
 			);
 			productRefGroup = B5E458FE29BCDEA600237B1F /* Products */;
 			projectDirPath = "";
@@ -336,10 +364,12 @@
 				B598BF5A29D6BCA500FDEF04 /* EndPointable.swift in Sources */,
 				B5E45A0429C1DECF00237B1F /* NetworkRequest.swift in Sources */,
 				B5C0BDC929C9F8CE00372709 /* FilterViewController.swift in Sources */,
+				B58DD4A829F65881000BD382 /* UIImage+.swift in Sources */,
 				B5E459E929C1D41500237B1F /* BaseViewController.swift in Sources */,
 				B5E45A0629C1DFEB00237B1F /* NetworkStatus.swift in Sources */,
 				B598BF6929D7D90000FDEF04 /* SceneViewController.swift in Sources */,
 				B5E4590129BCDEA600237B1F /* AppDelegate.swift in Sources */,
+				B58DD49D29F65664000BD382 /* NSObject+.swift in Sources */,
 				B5C0BDD429CB189000372709 /* MainViewController.swift in Sources */,
 				B5E459FA29C1DB2800237B1F /* HttpMethod.swift in Sources */,
 				B5E45A0229C1DEA400237B1F /* Requestable.swift in Sources */,
@@ -351,6 +381,8 @@
 				B5E459F229C1D90A00237B1F /* MainServiceable.swift in Sources */,
 				B5E459FC29C1DD6C00237B1F /* MainEndPoint.swift in Sources */,
 				B598BF5C29D6C08600FDEF04 /* APIEnvironment.swift in Sources */,
+				B58DD49B29F6565A000BD382 /* FilterTableViewCell.swift in Sources */,
+				B58DD4A629F657BD000BD382 /* Filter.swift in Sources */,
 				B5E4590329BCDEA600237B1F /* SceneDelegate.swift in Sources */,
 				B598BF6529D7D5CC00FDEF04 /* LoadingView.swift in Sources */,
 			);
@@ -562,6 +594,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B58DD49E29F656D8000BD382 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				branch = develop;
+				kind = branch;
+			};
+		};
+		B58DD4A129F656E1000BD382 /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		B598BF6129D7D5B200FDEF04 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
@@ -573,6 +621,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B58DD49F29F656D8000BD382 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B58DD49E29F656D8000BD382 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		B58DD4A229F656E1000BD382 /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B58DD4A129F656E1000BD382 /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
+		};
 		B598BF6229D7D5B200FDEF04 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B598BF6129D7D5B200FDEF04 /* XCRemoteSwiftPackageReference "lottie-ios" */;
