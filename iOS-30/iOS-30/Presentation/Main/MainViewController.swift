@@ -111,6 +111,13 @@ final class MainViewController: UIViewController {
         checkCameraPermission()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        DispatchQueue.global().async {
+            self.session?.startRunning()
+        }
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         previewLayer.frame = view.bounds
@@ -315,7 +322,13 @@ extension MainViewController: AVCapturePhotoCaptureDelegate {
         let width = Int(image.size.width)
         let height = Int(image.size.height)
         print(width, height)
-        guard let url = URL(string: "https://3qt14ezkgb.execute-api.ap-northeast-2.amazonaws.com/img/test/request/\(width)x\(height)?img_name=\(arc4random()).jpeg") else {
+//        guard let url = URL(string: "https://3qt14ezkgb.execute-api.ap-northeast-2.amazonaws.com/img/test/request/\(width)x\(height)?img_name=\(arc4random()).jpeg") else {
+//            print("url fail")
+//            return
+//
+//        }
+
+        guard let url = URL(string: "http://angheng.iptime.org:1398/request/?img_name=\(arc4random()).jpeg") else {
             print("url fail")
             return
 
@@ -331,8 +344,14 @@ extension MainViewController: AVCapturePhotoCaptureDelegate {
 
         Task {
             do {
-                let (data, response) = try await URLSession
-                    .shared
+
+
+                let sessionConfig = URLSessionConfiguration.default
+                sessionConfig.timeoutIntervalForRequest = .greatestFiniteMagnitude
+                sessionConfig.timeoutIntervalForResource = .greatestFiniteMagnitude
+                let session = URLSession(configuration: sessionConfig)
+
+                let (data, response) = try await session
                     .upload(for: urlRequest, from: jpegImage)
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode,
                       responseCode == 200 else {
@@ -344,18 +363,25 @@ extension MainViewController: AVCapturePhotoCaptureDelegate {
                     }
                     return
                 }
-                let decoder = JSONDecoder()
-                let baseModelData = try decoder.decode(
-                    BaseModel<Int>.self,
-                    from: data
-                )
-                print(baseModelData)
+
+                print("🚀🚀🚀🚀🚀🚀🚀")
+                dump(data)
+                let directoryURL = FileManager
+                    .default
+                    .urls(for: .documentDirectory,
+                          in: .userDomainMask)[0]
+                let fileURL = URL(fileURLWithPath: "myPLY", relativeTo: directoryURL).appendingPathExtension("ply")
+
+                try? data.write(to: fileURL)
+                print("File saved: \(fileURL.absoluteURL)")
+
                 LoadingIndicator.hideLoading()
-                self.view.window?.rootViewController = SceneViewController()
-                self.view.window?.makeKeyAndVisible()
+                let viewController = SceneViewController()
+                viewController.fileURL = fileURL
+                self.navigationController?.pushViewController(viewController, animated: true)
 
             } catch {
-                print(error)
+                print(error.localizedDescription)
             }
         }
 
