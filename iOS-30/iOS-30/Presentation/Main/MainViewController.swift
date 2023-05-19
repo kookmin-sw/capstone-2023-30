@@ -8,11 +8,6 @@
 import AVFoundation
 import UIKit
 
-@frozen
-enum FilterType {
-    case none
-    case gogh
-}
 
 final class MainViewController: UIViewController {
 
@@ -279,8 +274,12 @@ extension MainViewController {
     }
 
     @objc private func didTapFilterButton() {
-        print("Filter !")
-
+        let filterVC = FilterViewController()
+        filterVC.modalPresentationStyle = .fullScreen
+        filterVC.completion = { filter in
+            self.currentFilterLabel.text = filter.name
+        }
+        self.present(filterVC, animated: true)
     }
 
     @objc private func didTapAlbumButton() {

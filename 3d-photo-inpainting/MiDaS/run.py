@@ -45,7 +45,6 @@ def run_depth(img_names, input_path, output_path, model_path, Net, utils, target
 
         # input
         img = utils.read_image(img_name)
-        print("run.py 에서  img: ", img.shape)
         w = img.shape[1]
         scale = 640. / max(img.shape[0], img.shape[1])
         target_height, target_width = int(round(img.shape[0] * scale)), int(round(img.shape[1] * scale))

@@ -4,15 +4,13 @@ import glob
 import numpy as np
 import imageio
 from MiDaS.MiDaS_utils import write_depth
-from PIL import Image
-
 
 BOOST_BASE = 'BoostingMonocularDepth'
 
 BOOST_INPUTS = 'inputs'
 BOOST_OUTPUTS = 'outputs'
 
-def run_boostmonodepth(img_names, src_folder, depth_folder, image_folder):
+def run_boostmonodepth(img_names, src_folder, depth_folder):
 
     if not isinstance(img_names, list):
         img_names = [img_names]
@@ -25,7 +23,7 @@ def run_boostmonodepth(img_names, src_folder, depth_folder, image_folder):
     for img_name in img_names:
         base_name = os.path.basename(img_name)
         tgt_name = os.path.join(BOOST_BASE, BOOST_INPUTS, base_name)
-        os.system(f'cp {img_name} {tgt_name}')
+        os.system(f'copy {img_name} {tgt_name}')
 
         # keep only the file name here.
         # they save all depth as .png file
@@ -43,14 +41,9 @@ def run_boostmonodepth(img_names, src_folder, depth_folder, image_folder):
         depth = imageio.imread(os.path.join(BOOST_BASE, BOOST_OUTPUTS, tgt_name))
         depth = np.array(depth).astype(np.float32)
         depth = resize_depth(depth, target_width, target_height)
-        # np.save(os.path.join(depth_folder, tgt_name.replace('.png', '.npy')), depth / 32768. - 1.)
-        # write_depth(os.path.join(depth_folder, tgt_name.replace('.png', '')), depth / 32768. - 1.)
-        
-        ########### resize image .npy 형식으로 뽑아내기 ############
-        # img1 = resize_image(img, target_width, target_height)
-        # np.save(os.path.join(image_folder, tgt_name.replace('.png', '.npy')), img1)
-        
-        
+        np.save(os.path.join(depth_folder, tgt_name.replace('.png', '.npy')), depth / 32768. - 1.)
+        write_depth(os.path.join(depth_folder, tgt_name.replace('.png', '')), depth)
+
 def clean_folder(folder, img_exts=['.png', '.jpg', '.npy']):
 
     for img_ext in img_exts:
@@ -58,8 +51,7 @@ def clean_folder(folder, img_exts=['.png', '.jpg', '.npy']):
         if len(glob.glob(paths_to_check)) == 0:
             continue
         print(paths_to_check)
-        os.system(f'rm {paths_to_check}')
-
+        os.system(f'del {paths_to_check}')
 
 def resize_depth(depth, width, height):
     """Resize numpy (or image read by imageio) depth map
@@ -74,18 +66,3 @@ def resize_depth(depth, width, height):
     """
     depth = cv2.blur(depth, (3, 3))
     return cv2.resize(depth, (width, height), interpolation=cv2.INTER_AREA)
-
-### 
-def resize_image(image, width, height):
-    """Resize numpy (or image read by imageio) depth map
-
-    Args:
-        depth (numpy): depth
-        width (int): image width
-        height (int): image height
-
-    Returns:
-        array: processed depth
-    """
-    image = cv2.blur(image, (3, 3))
-    return cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)

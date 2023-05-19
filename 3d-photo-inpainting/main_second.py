@@ -1,35 +1,36 @@
 import numpy as np
 import argparse
-# import glob
+import glob
 import os
-# from functools import partial
-# import vispy
-# import scipy.misc as misc
+from functools import partial
+import vispy
+import scipy.misc as misc
 from tqdm import tqdm
 import yaml
 import time
-# import sys
-from mesh import write_ply, read_ply, output_3d_photo
+import sys
+from mesh_second import write_ply, read_ply, output_3d_photo
 from utils import get_MiDaS_samples, read_MiDaS_depth
 import torch
 import cv2
-# from skimage.transform import resize
+from skimage.transform import resize
 import imageio
-# import copy
+import copy
 from networks import Inpaint_Color_Net, Inpaint_Depth_Net, Inpaint_Edge_Net
 from MiDaS.run import run_depth
 from boostmonodepth_utils import run_boostmonodepth
 from MiDaS.monodepth_net import MonoDepthNet
 import MiDaS.MiDaS_utils as MiDaS_utils
 from bilateral_filtering import sparse_bilateral_filtering
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', type=str, default='argument.yml',help='Configure of post processing')
 args = parser.parse_args()
 config = yaml.load(open(args.config, 'r'))
 # if config['offscreen_rendering'] is True:
-#     vispy.use(app='egl')
-os.makedirs(config['mesh_folder'], exist_ok=True)
+#     vispy.use(app='egl')os.makedirs(config['mesh_folder'], exist_ok=True)
 os.makedirs(config['video_folder'], exist_ok=True)
 os.makedirs(config['depth_folder'], exist_ok=True)
 sample_list = get_MiDaS_samples(config['src_folder'], config['depth_folder'], config, config['specific'])
@@ -104,7 +105,6 @@ for idx in tqdm(range(len(sample_list))):
         rgb_model.eval()
         rgb_model = rgb_model.to(device)
         graph = None
-
 
         print(f"Writing depth ply (and basically doing everything) at {time.time()-start_time}")
         rt_info = write_ply(image,
