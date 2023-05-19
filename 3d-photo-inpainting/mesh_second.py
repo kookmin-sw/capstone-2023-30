@@ -36,7 +36,6 @@ def create_mesh(depth, image, int_mtx, config):
     LDI.graph['hoffset'], LDI.graph['woffset'] = config['extrapolation_thickness'], config['extrapolation_thickness']
     LDI.graph['bord_up'], LDI.graph['bord_down'] = LDI.graph['hoffset'] + 0, LDI.graph['hoffset'] + H
     LDI.graph['bord_left'], LDI.graph['bord_right'] = LDI.graph['woffset'] + 0, LDI.graph['woffset'] + W
-
     for idx in range(H):
         for idy in range(W):
             x, y = idx + LDI.graph['hoffset'], idy + LDI.graph['woffset']
@@ -46,12 +45,10 @@ def create_mesh(depth, image, int_mtx, config):
                          synthesis=False,
                          cc_id=set())
             xy2depth[(x, y)] = [-depth[idx, idy]]
-
     for x, y, d in LDI.nodes:
         two_nes = [ne for ne in [(x+1, y), (x, y+1)] if ne[0] < LDI.graph['bord_down'] and ne[1] < LDI.graph['bord_right']]
         [LDI.add_edge((ne[0], ne[1], xy2depth[ne][0]), (x, y, d)) for ne in two_nes]
     LDI = calculate_fov(LDI)
-
     image = np.pad(image,
                     pad_width=((config['extrapolation_thickness'], config['extrapolation_thickness']),
                                (config['extrapolation_thickness'], config['extrapolation_thickness']),
@@ -1791,31 +1788,6 @@ def DL_inpaint_edge(mesh,
                         'overlap_number':1.0,
                         'real_depth': real_depth}
             info_on_pix[(hx, hy)].append(new_info)
-
-    # 추가 코드: 저장 밒 종료
-    uvlist = np.array(list(info_on_pix.keys()))
-    uvlist = uvlist.astype(np.int16)
-    a = uvlist[:, 0]
-    b = uvlist[:, 1]
-    c = np.stack((b, a), axis=0)
-    c = c.T
-
-    depthlist = []
-    colorlist = []
-    for data in info_on_pix.values():
-        depthlist.append(data[0]['depth'])
-        colorlist.append(data[0]['color'])
-    depthlist = np.array(depthlist).astype(np.float32)
-    colorlist = np.array(colorlist).astype(np.uint8)
-    depthlist = depthlist.reshape(-1, 1)
-    colorlist = colorlist.reshape(-1, 3)
-
-    import scipy.io as sio
-    sio.savemat('LDI.mat', {'uv': c, 'z': depthlist, 'rgb': colorlist, 'h': [720], 'w': [720], 'full_h': [840],
-                             'full_w': [840], 'fov': [53.1]})
-    print("LDI was made. program exit.")
-    exit()
-
     specific_edge_id = tmp_specific_edge_id
     for erode_id, erode_context_cc in enumerate(erode_context_ccs):
         if len(specific_edge_id) > 0 and erode_id not in specific_edge_id:
@@ -1856,7 +1828,6 @@ def write_ply(image,
               depth_feat_model):
     depth = depth.astype(np.float64)
     input_mesh, xy2depth, image, depth = create_mesh(depth, image, int_mtx, config)
-    # 이 전에 프로그램 종료될 것
 
     H, W = input_mesh.graph['H'], input_mesh.graph['W']
     input_mesh = tear_edges(input_mesh, config['depth_threshold'], xy2depth)
