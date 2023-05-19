@@ -29,6 +29,8 @@ def main(args):
     try:
         ckpt = torch.load(args.model_path)
         config = ckpt['config']
+        print(config)
+        
         net = Model3D(config['encoder'], config['decoder'])
         if args.style_path is not None:
             net.convert_for_stylization(config['stylizer'])
@@ -69,6 +71,15 @@ def main(args):
     random.shuffle(pt_idx)
     rgb, uv, z = rgb[pt_idx], uv[pt_idx], z[pt_idx]
     
+    # ------start-----
+    rgb_save = rgb.cpu().numpy()
+    uv_save = uv.cpu().numpy()
+    z_save = z.cpu().numpy()
+    
+    np.save('./rgb_save', rgb_save)
+    np.save('./uv_save', uv_save)
+    np.save('./z_save', z_save)
+    # ------end-----
     rgb = rgb.t()                                   # (3, p)
 
     # camera intrinsics
@@ -152,6 +163,13 @@ def main(args):
     tgt_rgbs = output_dict['tgt_rgb'][0]                    # (v, 3, h, w) 
     pred_rgbs = pred_rgbs.permute(0, 2, 3, 1).cpu().numpy() # (v, h, w, 3)
     tgt_rgbs = tgt_rgbs.permute(0, 2, 3, 1).cpu().numpy()   # (v, h, w, 3)
+    #-----start-----
+    np.save('./pred_save', pred_rgbs)
+    np.save('./tgt_save', tgt_rgbs)
+    #np.save('/uv_not_rgb_only_save', output_dict['uv'].cpu().numpy())
+    #np.save('/viz_not_rgb_only_save', output_dict['viz'].cpu().numpy())
+    #-----end-----
+    
     pred_rgbs = np.clip(pred_rgbs, 0, 1)
     tgt_rgbs = np.clip(tgt_rgbs, 0, 1)
     pred_rgbs = (pred_rgbs * 255).astype(np.uint8)

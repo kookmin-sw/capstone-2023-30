@@ -3,6 +3,9 @@ import torch.nn as nn
 
 from .module import *
 from .render import view2ndc, ndc2view
+import numpy as np
+
+import sys
 
 
 class Model3D(nn.Module):
@@ -11,7 +14,8 @@ class Model3D(nn.Module):
         super(Model3D, self).__init__()
 
         self.stylization = False            # whether in stylization mode
-        self.render_then_decode = True      # whether to render 2D feature maps before decoding
+        self.render_then_decode = True # whether to render 2D feature maps before decoding
+        # self.render_then_decode = False
 
         # point cloud utilities
         ## NOTE: all geometry-based, no learnable parameters
@@ -34,8 +38,10 @@ class Model3D(nn.Module):
             raise NotImplementedError(
                 '[ERROR] invalid decoder: {:s}'.format(dec_cfg['arch'])
             )
+        
         self.decoder_up = self.decoder.up   # whether to upsample features before rendering
 
+        
     def convert_for_stylization(self, cfg, freeze_enc=True, freeze_dec=True):
         if freeze_enc:
             for p in self.encoder.parameters():
@@ -110,7 +116,7 @@ class Model3D(nn.Module):
         else:
             uv, z = input_dict['src_uv'], input_dict['src_z']
             xyz = self.unprojector(uv, z, K)
-        
+                
         n_pts = input_dict.get(
             'n_pts', xyz.new_ones(xyz.size(0), dtype=torch.int) * xyz.size(1)
         )
@@ -124,7 +130,9 @@ class Model3D(nn.Module):
         raw_xyz, raw_rgb = xyz, rgb
         ## NOTE: assume that the ordering of points has been randomized
         ## (e.g., by random shuffling).
+        
         xyz, rgb = xyz[:, :pcd_size], rgb[..., :pcd_size]
+        
 
         # view space -> NDC space
         ## NOTE: assume that valid points have depth < 1e5.
@@ -170,6 +178,10 @@ class Model3D(nn.Module):
                 else:
                     xyz = xyz_ndc
             new_xyz = self.view_transformer(xyz, Ms[:, k])
+            
+            ########################
+
+
             new_raw_xyz = self.view_transformer(raw_xyz, Ms[:, k])
 
             if self.render_then_decode:
@@ -182,13 +194,52 @@ class Model3D(nn.Module):
                 )
                 pred_feats = pred_dict['data']
                 pred_rgb = self.decoder(pred_feats)
+                                
+                #####################################
+                print(pred_rgb.shape)
+                pred_rgb_0 = pred_rgb[0]
+                pred_rgb_0 = pred_rgb_0.cpu().numpy()
+                
+                pred_rgb_0 = pred_rgb_0.swapaxes(0, 1)
+                pred_rgb_0 = pred_rgb_0.swapaxes(1, 2)
+                
+                pred_rgb_0[pred_rgb_0 < 0] = 0
+                pred_rgb_0[pred_rgb_0 > 1] = 1
+                      
+                          
+                # 원본 이미지
+                # np.save('./img_save', pred_rgb_0)
+
+                # jpg 저장
+                pred_rgb_0 *= 255
+                pred_rgb_0 = pred_rgb_0.astype('uint8')
+
+                from PIL import Image
+                img = Image.fromarray(pred_rgb_0, 'RGB')
+                img.save('stylized1.jpg')
+                
+                sys.exit(0)
+                ######################################
+                
+                ##############
+                # rgb_save = pred_rgb.cpu().numpy()
+                # np.save('./pred_rgb', rgb_save)
+                ###############
+                
             else:
                 # 1) decode featurized point cloud into RGB point cloud
                 # 2) rasterize RGB point cloud to novel view
                 rgb = self.decoder(xyz_ndc_list, feats)
                 data = rgb
+                
+                ##############
+                data_save = data.cpu().numpy()
+                np.save('./data_save', data_save)
+                ###############
+                
                 if not rgb_only:
                     data = torch.cat([data, up_feats], 1)
+                    
                 pred_dict = self.renderer(
                     new_xyz, data, tgt_fov, h, w, 
                     anti_aliasing=anti_aliasing, return_uv=(not rgb_only)
