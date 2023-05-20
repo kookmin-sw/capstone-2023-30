@@ -472,7 +472,7 @@ def group_edges(LDI, config, image, remove_conflict_ordinal, spdb=False):
     '''
     if remove_conflict_ordinal:
         new_discont_ccs = []
-        num_new_cc = 0
+
         for edge_id, discont_cc in enumerate(discont_ccs):
             near_flag = False
             far_flag = False
@@ -897,7 +897,7 @@ def remove_dangling(mesh, edge_ccs, edge_mesh, info_on_pix, image, depth, config
 def context_and_holes(mesh, edge_ccs, config, specific_edge_id, specific_edge_loc, depth_feat_model,
                       connect_points_ccs=None, inpaint_iter=0, filter_edge=False, vis_edge_id=None):
     edge_maps = np.zeros((mesh.graph['H'], mesh.graph['W'])) - 1
-    mask_info = {}
+
     for edge_id, edge_cc in enumerate(edge_ccs):
         for edge_node in edge_cc:
             edge_maps[edge_node[0], edge_node[1]] = edge_id
@@ -911,7 +911,7 @@ def context_and_holes(mesh, edge_ccs, config, specific_edge_id, specific_edge_lo
     broken_mask_ccs = [set() for x in range(len(edge_ccs))]
     invalid_extend_edge_ccs = [set() for x in range(len(edge_ccs))]
     intouched_ccs = [set() for x in range(len(edge_ccs))]
-    redundant_ccs = [set() for x in range(len(edge_ccs))]
+
     if inpaint_iter == 0:
         background_thickness = config['background_thickness']
         context_thickness = config['context_thickness']
@@ -1154,12 +1154,7 @@ def context_and_holes(mesh, edge_ccs, config, specific_edge_id, specific_edge_lo
                                 intersect_context_map[ne[0], ne[1]] = True
                                 tmp_intersect_context_nodes.append(ne)
                                 continue
-                        if False and mesh_nodes[ne].get('near') is not None and mesh_nodes[ne].get('edge_id') != edge_id:
-                            noncont_nears = set(mesh_nodes[ne].get('near'))
-                            for noncont_near in noncont_nears:
-                                if bool(context_map[noncont_near[0], noncont_near[1]]) is False:
-                                    tmp_noncont_nodes.add(noncont_near)
-                                    noncont_map[noncont_near[0], noncont_near[1]] = True
+
                         new_tmp_context_nodes.append(ne)
                         context_map[ne[0], ne[1]] = True
                         context_depth[ne[0], ne[1]] = ne[2]
@@ -1277,7 +1272,6 @@ def context_and_holes(mesh, edge_ccs, config, specific_edge_id, specific_edge_lo
             context_map[context_node[0], context_node[1]] = 1
         extend_context_ccs[edge_id] = extend_context_ccs[edge_id] - mask_ccs[edge_id] - accomp_extend_context_ccs[edge_id]
     if inpaint_iter == 0:
-        all_ecnt_cc = set()
         for ecnt_id, ecnt_cc in enumerate(extend_context_ccs):
             constraint_context_ids = set()
             constraint_context_cc = set()
@@ -1357,7 +1351,7 @@ def context_and_holes(mesh, edge_ccs, config, specific_edge_id, specific_edge_lo
                             tmp_mask_map[ne[0], ne[1]] = True
             init_invalid_context_map[tmp_context_map] = False
             _, tmp_label_map = cv2.connectedComponents((init_invalid_context_map | tmp_context_map).astype(np.uint8), connectivity=8)
-            tmp_label_ids = set(np.unique(tmp_label_map[init_invalid_context_map]))
+
             if (tmp_mask_map.astype(np.uint8) * tmp_context_map.astype(np.uint8)).max() > 0:
                 import pdb; pdb.set_trace()
             if vis_edge_id is not None and ecnt_id == vis_edge_id:
@@ -1413,14 +1407,14 @@ def DL_inpaint_edge(mesh,
     edge_condition = lambda x, m: m.nodes[x].get('far') is not None and len(m.nodes[x].get('far')) > 0
     edge_map = get_map_from_ccs(edge_ccs, mesh.graph['H'], mesh.graph['W'], mesh, edge_condition)
     np_depth, np_image = depth.copy(), image.copy()
-    image_c = image.shape[-1]
+
     image = torch.FloatTensor(image.transpose(2, 0, 1)).unsqueeze(0).to(device)
     if depth.ndim < 3:
         depth = depth[..., None]
     depth = torch.FloatTensor(depth.transpose(2, 0, 1)).unsqueeze(0).to(device)
     mesh.graph['max_edge_id'] = len(edge_ccs)
     connnect_points_ccs = [set() for _ in range(len(edge_ccs))]
-    gp_time, tmp_mesh_time, bilateral_time = 0, 0, 0
+
     edges_infos = dict()
     edges_in_mask = [set() for _ in range(len(edge_ccs))]
     tmp_specific_edge_id = []
@@ -1452,13 +1446,8 @@ def DL_inpaint_edge(mesh,
             patch_edge_dict['disp'], patch_edge_dict['edge'] = \
             crop_maps_by_size(union_size, edge_dict['mask'], edge_dict['context'],
                                 edge_dict['rgb'], edge_dict['disp'], edge_dict['edge'])
-        x_anchor, y_anchor = [union_size['x_min'], union_size['x_max']], [union_size['y_min'], union_size['y_max']]
         tensor_edge_dict = convert2tensor(patch_edge_dict)
-        input_edge_feat = torch.cat((tensor_edge_dict['rgb'],
-                                        tensor_edge_dict['disp'],
-                                        tensor_edge_dict['edge'],
-                                        1 - tensor_edge_dict['context'],
-                                        tensor_edge_dict['mask']), dim=1)
+
         if require_depth_edge(patch_edge_dict['edge'], patch_edge_dict['mask']) and inpaint_iter == 0:
             with torch.no_grad():
                 depth_edge_output = depth_edge_model.forward_3P(tensor_edge_dict['mask'],
@@ -1484,7 +1473,7 @@ def DL_inpaint_edge(mesh,
                         clean_far_edge_new(edge_dict['output'], end_depth_maps, edge_dict['mask'], edge_dict['context'], mesh, info_on_pix, edge_dict['self_edge'], inpaint_iter, config)
                 except:
                     import pdb; pdb.set_trace()
-                pre_npath_map = edge_dict['npath_map'].copy()
+
                 if config.get('repeat_inpaint_edge') is True:
                     for _ in range(2):
                         tmp_input_edge = ((edge_dict['npath_map'] > -1) + edge_dict['edge']).clip(0, 1)
@@ -1567,13 +1556,7 @@ def DL_inpaint_edge(mesh,
             patch_edge_dict['disp'], patch_edge_dict['edge'] = \
             crop_maps_by_size(union_size, edge_dict['mask'], edge_dict['context'],
                                 edge_dict['rgb'], edge_dict['disp'], edge_dict['edge'])
-        x_anchor, y_anchor = [union_size['x_min'], union_size['x_max']], [union_size['y_min'], union_size['y_max']]
         tensor_edge_dict = convert2tensor(patch_edge_dict)
-        input_edge_feat = torch.cat((tensor_edge_dict['rgb'],
-                                        tensor_edge_dict['disp'],
-                                        tensor_edge_dict['edge'],
-                                        1 - tensor_edge_dict['context'],
-                                        tensor_edge_dict['mask']), dim=1)
         edge_dict['output'] = edge_dict['edge'].copy()
 
         if require_depth_edge(patch_edge_dict['edge'], patch_edge_dict['mask']) and inpaint_iter == 0:
@@ -1784,34 +1767,6 @@ def DL_inpaint_edge(mesh,
                         'real_depth': real_depth}
             info_on_pix[(hx, hy)].append(new_info)
 
-    # Save pcl as mat. ================================
-    uvlist = np.array(list(info_on_pix.keys()))
-    uvlist = uvlist.astype(np.int16)
-
-    a = uvlist[:, 0]
-    b = uvlist[:, 1]
-    c = np.stack((b, a), axis=0)
-    c = c.T
-
-    depthlist = []
-    colorlist = []
-    for data in info_on_pix.values():
-        depthlist.append(data[0]['depth'])
-        colorlist.append(data[0]['color'])
-    depthlist = np.array(depthlist).astype(np.float32)
-    colorlist = np.array(colorlist).astype(np.uint8)
-    depthlist = depthlist.reshape(-1, 1)
-    colorlist = colorlist.reshape(-1, 3)
-
-    ext_H, ext_W = H + 2 * config['extrapolation_thickness'], W + 2 * config['extrapolation_thickness']
-
-    # if arg.ldi_flag:
-    import scipy.io as sio
-    sio.savemat('LDI.mat', {'uv': c, 'z': depthlist, 'rgb': colorlist, 'h': [H], 'w': [W], 'full_h': [ext_H],
-                             'full_w': [ext_W], 'fov': [53.1]})
-    
-    # ==========================================
-
     specific_edge_id = tmp_specific_edge_id
     for erode_id, erode_context_cc in enumerate(erode_context_ccs):
         if len(specific_edge_id) > 0 and erode_id not in specific_edge_id:
@@ -1987,6 +1942,38 @@ def write_ply(image,
                                                                                     specific_edge_loc,
                                                                                     inpaint_iter=1)
     
+    # Save pcl as mat.
+    if config['save_ldi']:
+        uvlist = np.array(list(info_on_pix.keys()))
+        uvlist = uvlist.astype(np.int16)
+
+        a = uvlist[:, 0]
+        b = uvlist[:, 1]
+        c = np.stack((b, a), axis=0)
+        c = c.T
+
+        depthlist = []
+        colorlist = []
+        for data in info_on_pix.values():
+            depthlist.append(data[0]['depth'])
+            colorlist.append(data[0]['color'])
+        depthlist = np.array(depthlist).astype(np.float32)
+        colorlist = np.array(colorlist).astype(np.uint8)
+        depthlist = depthlist.reshape(-1, 1)
+        colorlist = colorlist.reshape(-1, 3)
+
+        ext_H, ext_W = H + 2 * config['extrapolation_thickness'], W + 2 * config['extrapolation_thickness']
+
+        print('Staring make LDI.')
+        import scipy.io as sio
+        sio.savemat('LDI.mat', {'uv': c, 'z': depthlist, 'rgb': colorlist, 'h': [H], 'w': [W], 'full_h': [ext_H],
+                                'full_w': [ext_W], 'fov': [53.1]})
+        print('Making LDI Completed.')
+    
+    if not config['save_ply']:
+        print('Exit without make ply file.')
+        exit()
+
     vertex_id = 0
     input_mesh.graph['H'], input_mesh.graph['W'] = input_mesh.graph['noext_H'], input_mesh.graph['noext_W']
 
@@ -2037,38 +2024,25 @@ def write_ply(image,
                 node_str_point.append(str_pt)
     str_faces = generate_face(input_mesh, info_on_pix, config)
 
-    if config['save_ply'] is True:
-        print("Writing mesh file %s ..." % ply_name)
-        with open(ply_name, 'w') as ply_fi:
-            ply_fi.write('ply\n' + 'format ascii 1.0\n')
-            ply_fi.write('comment H ' + str(int(input_mesh.graph['H'])) + '\n')
-            ply_fi.write('comment W ' + str(int(input_mesh.graph['W'])) + '\n')
-            ply_fi.write('comment hFov ' + str(float(input_mesh.graph['hFov'])) + '\n')
-            ply_fi.write('comment vFov ' + str(float(input_mesh.graph['vFov'])) + '\n')
-            ply_fi.write('element vertex ' + str(len(node_str_list)) + '\n')
-            ply_fi.write('property float x\n' + \
-                         'property float y\n' + \
-                         'property float z\n' + \
-                         'property uchar red\n' + \
-                         'property uchar green\n' + \
-                         'property uchar blue\n' + \
-                         'property uchar alpha\n')
-            ply_fi.write('element face ' + str(len(str_faces)) + '\n')
-            ply_fi.write('property list uchar int vertex_index\n')
-            ply_fi.write('end_header\n')
-            ply_fi.writelines(node_str_list)
-            ply_fi.writelines(str_faces)
-        ply_fi.close()
-        return input_mesh
-    
-    else:
-        H = int(input_mesh.graph['H'])
-        W = int(input_mesh.graph['W'])
-        hFov = input_mesh.graph['hFov']
-        vFov = input_mesh.graph['vFov']
-        node_str_color = np.array(node_str_color).astype(np.float32)
-        node_str_color[..., :3] = node_str_color[..., :3] / 255.
-        node_str_point = np.array(node_str_point)
-        str_faces = np.array(str_faces)
-
-        return node_str_point, node_str_color, str_faces, H, W, hFov, vFov
+    print("Writing mesh file %s ..." % ply_name)
+    with open(ply_name, 'w') as ply_fi:
+        ply_fi.write('ply\n' + 'format ascii 1.0\n')
+        ply_fi.write('comment H ' + str(int(input_mesh.graph['H'])) + '\n')
+        ply_fi.write('comment W ' + str(int(input_mesh.graph['W'])) + '\n')
+        ply_fi.write('comment hFov ' + str(float(input_mesh.graph['hFov'])) + '\n')
+        ply_fi.write('comment vFov ' + str(float(input_mesh.graph['vFov'])) + '\n')
+        ply_fi.write('element vertex ' + str(len(node_str_list)) + '\n')
+        ply_fi.write('property float x\n' + \
+                        'property float y\n' + \
+                        'property float z\n' + \
+                        'property uchar red\n' + \
+                        'property uchar green\n' + \
+                        'property uchar blue\n' + \
+                        'property uchar alpha\n')
+        ply_fi.write('element face ' + str(len(str_faces)) + '\n')
+        ply_fi.write('property list uchar int vertex_index\n')
+        ply_fi.write('end_header\n')
+        ply_fi.writelines(node_str_list)
+        ply_fi.writelines(str_faces)
+    ply_fi.close()
+    return input_mesh
