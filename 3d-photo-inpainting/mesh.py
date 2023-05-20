@@ -1997,7 +1997,6 @@ def write_ply(image,
                       k_00, k_02, k_11, k_12, w_offset, h_offset)]
             if input_mesh.has_node((pix_xy[0], pix_xy[1], pix_info['depth'])) is False:
                 return False
-                continue
             if pix_info.get('overlap_number') is not None:
                 str_color = [out_fmt(x, ply_flag) for x in (pix_info['color']/pix_info['overlap_number']).astype(np.uint8).tolist()]
             else:
