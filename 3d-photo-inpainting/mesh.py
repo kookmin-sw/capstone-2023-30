@@ -1,28 +1,18 @@
-import os
 import numpy as np
 try:
     import cynetworkx as netx
 except ImportError:
     import networkx as netx
 import matplotlib.pyplot as plt
-from functools import partial
-from vispy import scene, io
-from vispy.scene import visuals
-from vispy.visuals.filters import Alpha
 import cv2
-from moviepy.editor import ImageSequenceClip
-from skimage.transform import resize
-import time
 import copy
 import torch
-import os
-from utils import path_planning, open_small_mask, clean_far_edge, refine_depth_around_edge
+from utils import open_small_mask, refine_depth_around_edge
 from utils import refine_color_around_edge, filter_irrelevant_edge_new, require_depth_edge, clean_far_edge_new
-from utils import create_placeholder, refresh_node, find_largest_rect
-from mesh_tools import get_depth_from_maps, get_map_from_ccs, get_edge_from_nodes, get_depth_from_nodes, get_rgb_from_nodes, crop_maps_by_size, convert2tensor, recursive_add_edge, update_info, filter_edge, relabel_node, depth_inpainting
-from mesh_tools import refresh_bord_depth, enlarge_border, fill_dummy_bord, extrapolate, fill_missing_node, incomplete_node, get_valid_size, dilate_valid_size, size_operation
-import transforms3d
-import random
+from utils import create_placeholder, refresh_node
+from mesh_tools import get_depth_from_maps, get_map_from_ccs, get_edge_from_nodes, get_rgb_from_nodes, crop_maps_by_size, convert2tensor, recursive_add_edge, update_info, filter_edge, depth_inpainting
+from mesh_tools import refresh_bord_depth, enlarge_border, fill_dummy_bord, extrapolate, fill_missing_node, get_valid_size, dilate_valid_size, size_operation
+
 from functools import reduce
 
 def create_mesh(depth, image, int_mtx, config):
@@ -1415,6 +1405,8 @@ def DL_inpaint_edge(mesh,
     else:
         device = "cpu"
 
+    H, W, C= image.shape
+
     edge_map = np.zeros_like(depth)
     new_edge_ccs = [set() for _ in range(len(edge_ccs))]
     edge_maps_with_id = edge_maps
@@ -1792,9 +1784,10 @@ def DL_inpaint_edge(mesh,
                         'real_depth': real_depth}
             info_on_pix[(hx, hy)].append(new_info)
 
-    # 추가 코드: 저장 밒 종료
+    # Save pcl as mat. ================================
     uvlist = np.array(list(info_on_pix.keys()))
     uvlist = uvlist.astype(np.int16)
+
     a = uvlist[:, 0]
     b = uvlist[:, 1]
     c = np.stack((b, a), axis=0)
@@ -1810,11 +1803,14 @@ def DL_inpaint_edge(mesh,
     depthlist = depthlist.reshape(-1, 1)
     colorlist = colorlist.reshape(-1, 3)
 
+    ext_H, ext_W = H + 2 * config['extrapolation_thickness'], W + 2 * config['extrapolation_thickness']
+
+    # if arg.ldi_flag:
     import scipy.io as sio
-    sio.savemat('LDI.mat', {'uv': c, 'z': depthlist, 'rgb': colorlist, 'h': [720], 'w': [720], 'full_h': [840],
-                             'full_w': [840], 'fov': [53.1]})
-    print("LDI was made. program exit.")
-    exit()
+    sio.savemat('LDI.mat', {'uv': c, 'z': depthlist, 'rgb': colorlist, 'h': [H], 'w': [W], 'full_h': [ext_H],
+                             'full_w': [ext_W], 'fov': [53.1]})
+    
+    # ==========================================
 
     specific_edge_id = tmp_specific_edge_id
     for erode_id, erode_context_cc in enumerate(erode_context_ccs):
@@ -1844,7 +1840,6 @@ def DL_inpaint_edge(mesh,
 
     return mesh, info_on_pix, specific_mask_nodes, new_edge_ccs, connnect_points_ccs, np_image
 
-
 def write_ply(image,
               depth,
               int_mtx,
@@ -1856,54 +1851,55 @@ def write_ply(image,
               depth_feat_model):
     depth = depth.astype(np.float64)
     input_mesh, xy2depth, image, depth = create_mesh(depth, image, int_mtx, config)
-    # 이 전에 프로그램 종료될 것
 
     H, W = input_mesh.graph['H'], input_mesh.graph['W']
     input_mesh = tear_edges(input_mesh, config['depth_threshold'], xy2depth)
     input_mesh, info_on_pix = generate_init_node(input_mesh, config, min_node_in_cc=200)
     edge_ccs, input_mesh, edge_mesh = group_edges(input_mesh, config, image, remove_conflict_ordinal=False)
-    edge_canvas = np.zeros((H, W)) - 1
 
     input_mesh, info_on_pix, depth = reassign_floating_island(input_mesh, info_on_pix, image, depth)
     input_mesh = update_status(input_mesh, info_on_pix)
     specific_edge_id = []
     edge_ccs, input_mesh, edge_mesh = group_edges(input_mesh, config, image, remove_conflict_ordinal=True)
-    pre_depth = depth.copy()
     input_mesh, info_on_pix, edge_mesh, depth, aft_mark = remove_dangling(input_mesh, edge_ccs, edge_mesh, info_on_pix, image, depth, config)
 
     input_mesh, depth, info_on_pix = update_status(input_mesh, info_on_pix, depth)
     edge_ccs, input_mesh, edge_mesh = group_edges(input_mesh, config, image, remove_conflict_ordinal=True)
-    edge_canvas = np.zeros((H, W)) - 1
 
     mesh, info_on_pix, depth = fill_missing_node(input_mesh, info_on_pix, image, depth)
     if config['extrapolate_border'] is True:
-        pre_depth = depth.copy()
         input_mesh, info_on_pix, depth = refresh_bord_depth(input_mesh, info_on_pix, image, depth)
         input_mesh = remove_node_feat(input_mesh, 'edge_id')
-        aft_depth = depth.copy()
         input_mesh, info_on_pix, depth, image = enlarge_border(input_mesh, info_on_pix, depth, image, config)
-        noext_H, noext_W = H, W
         H, W = image.shape[:2]
         input_mesh, info_on_pix = fill_dummy_bord(input_mesh, info_on_pix, image, depth, config)
-        edge_ccs, input_mesh, edge_mesh = \
-            group_edges(input_mesh, config, image, remove_conflict_ordinal=True)
+
+        edge_ccs, input_mesh, edge_mesh = group_edges(
+            input_mesh, config, image, remove_conflict_ordinal=True
+        )
         input_mesh = combine_end_node(input_mesh, edge_mesh, edge_ccs, depth)
         input_mesh, depth, info_on_pix = update_status(input_mesh, info_on_pix, depth)
-        edge_ccs, input_mesh, edge_mesh = \
-            group_edges(input_mesh, config, image, remove_conflict_ordinal=True, spdb=False)
+        
+        edge_ccs, input_mesh, edge_mesh = group_edges(
+            input_mesh, config, image, remove_conflict_ordinal=True, spdb=False
+        )
         input_mesh = remove_redundant_edge(input_mesh, edge_mesh, edge_ccs, info_on_pix, config, redundant_number=config['redundant_number'], spdb=False)
         input_mesh, depth, info_on_pix = update_status(input_mesh, info_on_pix, depth)
         edge_ccs, input_mesh, edge_mesh = group_edges(input_mesh, config, image, remove_conflict_ordinal=True)
+
         input_mesh = combine_end_node(input_mesh, edge_mesh, edge_ccs, depth)
         input_mesh = remove_redundant_edge(input_mesh, edge_mesh, edge_ccs, info_on_pix, config, redundant_number=config['redundant_number'], invalid=True, spdb=False)
         input_mesh, depth, info_on_pix = update_status(input_mesh, info_on_pix, depth)
+
         edge_ccs, input_mesh, edge_mesh = group_edges(input_mesh, config, image, remove_conflict_ordinal=True)
         input_mesh = combine_end_node(input_mesh, edge_mesh, edge_ccs, depth)
         input_mesh, depth, info_on_pix = update_status(input_mesh, info_on_pix, depth)
+
         edge_ccs, input_mesh, edge_mesh = group_edges(input_mesh, config, image, remove_conflict_ordinal=True)
         edge_condition = lambda x, m: m.nodes[x].get('far') is not None and len(m.nodes[x].get('far')) > 0
         edge_map = get_map_from_ccs(edge_ccs, input_mesh.graph['H'], input_mesh.graph['W'], input_mesh, edge_condition)
         other_edge_with_id = get_map_from_ccs(edge_ccs, input_mesh.graph['H'], input_mesh.graph['W'], real_id=True)
+
         info_on_pix, input_mesh, image, depth, edge_ccs = extrapolate(input_mesh, info_on_pix, image, depth, other_edge_with_id, edge_map, edge_ccs,
                                                 depth_edge_model, depth_feat_model, rgb_model, config, direc="up")
         info_on_pix, input_mesh, image, depth, edge_ccs = extrapolate(input_mesh, info_on_pix, image, depth, other_edge_with_id, edge_map, edge_ccs,
@@ -1920,11 +1916,13 @@ def write_ply(image,
                                                 depth_edge_model, depth_feat_model, rgb_model, config, direc="left-up")
         info_on_pix, input_mesh, image, depth, edge_ccs = extrapolate(input_mesh, info_on_pix, image, depth, other_edge_with_id, edge_map, edge_ccs,
                                                 depth_edge_model, depth_feat_model, rgb_model, config, direc="left-down")
+        
     specific_edge_loc = None
     specific_edge_id = []
     vis_edge_id = None
+
     context_ccs, mask_ccs, broken_mask_ccs, edge_ccs, erode_context_ccs, \
-        init_mask_connect, edge_maps, extend_context_ccs, extend_edge_ccs, extend_erode_context_ccs = \
+    init_mask_connect, edge_maps, extend_context_ccs, extend_edge_ccs, extend_erode_context_ccs = \
                                                                                 context_and_holes(input_mesh,
                                                                                             edge_ccs,
                                                                                             config,
@@ -1932,19 +1930,10 @@ def write_ply(image,
                                                                                             specific_edge_loc,
                                                                                             depth_feat_model,
                                                                                             inpaint_iter=0,
-                                                                                            vis_edge_id=vis_edge_id)
-    edge_canvas = np.zeros((H, W))
-    mask = np.zeros((H, W))
-    context = np.zeros((H, W))
-    vis_edge_ccs = filter_edge(input_mesh, edge_ccs, config)
-    edge_canvas = np.zeros((input_mesh.graph['H'], input_mesh.graph['W'])) - 1
+                                                                                            vis_edge_id=vis_edge_id
+                                                                                            )
+    
     specific_edge_loc = None
-    FG_edge_maps = edge_maps.copy()
-    edge_canvas = np.zeros((input_mesh.graph['H'], input_mesh.graph['W'])) - 1
-    # for cc_id, cc in enumerate(edge_ccs):
-    #     for node in cc:
-    #         edge_canvas[node[0], node[1]] = cc_id
-    # f, ((ax0, ax1, ax2)) = plt.subplots(1, 3, sharex=True, sharey=True); ax0.imshow(1./depth); ax1.imshow(image); ax2.imshow(edge_canvas); plt.show()
     input_mesh, info_on_pix, specific_edge_nodes, new_edge_ccs, connect_points_ccs, image = DL_inpaint_edge(input_mesh,
                                                                                                             info_on_pix,
                                                                                                             config,
@@ -1967,20 +1956,13 @@ def write_ply(image,
                                                                                                             specific_edge_id,
                                                                                                             specific_edge_loc,
                                                                                                             inpaint_iter=0)
+    
     specific_edge_id = []
-    edge_canvas = np.zeros((input_mesh.graph['H'], input_mesh.graph['W']))
     connect_points_ccs = [set() for _ in connect_points_ccs]
     context_ccs, mask_ccs, broken_mask_ccs, edge_ccs, erode_context_ccs, init_mask_connect, \
         edge_maps, extend_context_ccs, extend_edge_ccs, extend_erode_context_ccs = \
             context_and_holes(input_mesh, new_edge_ccs, config, specific_edge_id, specific_edge_loc, depth_feat_model, connect_points_ccs, inpaint_iter=1)
-    mask_canvas = np.zeros((input_mesh.graph['H'], input_mesh.graph['W']))
-    context_canvas = np.zeros((input_mesh.graph['H'], input_mesh.graph['W']))
-    erode_context_ccs_canvas = np.zeros((input_mesh.graph['H'], input_mesh.graph['W']))
-    edge_canvas = np.zeros((input_mesh.graph['H'], input_mesh.graph['W']))
-    # edge_canvas = np.zeros((input_mesh.graph['H'], input_mesh.graph['W'])) - 1
-    # for cc_id, cc in enumerate(edge_ccs):
-    #     for node in cc:
-    #         edge_canvas[node[0], node[1]] = cc_id
+
     specific_edge_id = []
     input_mesh, info_on_pix, specific_edge_nodes, new_edge_ccs, _, image = DL_inpaint_edge(input_mesh,
                                                                                     info_on_pix,
@@ -2004,11 +1986,10 @@ def write_ply(image,
                                                                                     specific_edge_id,
                                                                                     specific_edge_loc,
                                                                                     inpaint_iter=1)
+    
     vertex_id = 0
     input_mesh.graph['H'], input_mesh.graph['W'] = input_mesh.graph['noext_H'], input_mesh.graph['noext_W']
-    background_canvas = np.zeros((input_mesh.graph['H'],
-                                  input_mesh.graph['W'],
-                                  3))
+
     ply_flag = config.get('save_ply')
     if ply_flag is True:
         node_str_list = []
@@ -2016,12 +1997,7 @@ def write_ply(image,
         node_str_color = []
         node_str_point = []
     out_fmt = lambda x, x_flag: str(x) if x_flag is True else x
-    point_time = 0
-    hlight_time = 0
-    cur_id_time = 0
-    node_str_time = 0
-    generate_face_time = 0
-    point_list = []
+
     k_00, k_02, k_11, k_12 = \
         input_mesh.graph['cam_param_pix_inv'][0, 0], input_mesh.graph['cam_param_pix_inv'][0, 2], \
         input_mesh.graph['cam_param_pix_inv'][1, 1], input_mesh.graph['cam_param_pix_inv'][1, 2]
@@ -2060,6 +2036,7 @@ def write_ply(image,
                 node_str_color.append(str_color)
                 node_str_point.append(str_pt)
     str_faces = generate_face(input_mesh, info_on_pix, config)
+
     if config['save_ply'] is True:
         print("Writing mesh file %s ..." % ply_name)
         with open(ply_name, 'w') as ply_fi:
@@ -2083,6 +2060,7 @@ def write_ply(image,
             ply_fi.writelines(str_faces)
         ply_fi.close()
         return input_mesh
+    
     else:
         H = int(input_mesh.graph['H'])
         W = int(input_mesh.graph['W'])
@@ -2094,232 +2072,3 @@ def write_ply(image,
         str_faces = np.array(str_faces)
 
         return node_str_point, node_str_color, str_faces, H, W, hFov, vFov
-
-def read_ply(mesh_fi):
-    ply_fi = open(mesh_fi, 'r')
-    Height = None
-    Width = None
-    hFov = None
-    vFov = None
-    while True:
-        line = ply_fi.readline().split('\n')[0]
-        if line.startswith('element vertex'):
-            num_vertex = int(line.split(' ')[-1])
-        elif line.startswith('element face'):
-            num_face = int(line.split(' ')[-1])
-        elif line.startswith('comment'):
-            if line.split(' ')[1] == 'H':
-                Height = int(line.split(' ')[-1].split('\n')[0])
-            if line.split(' ')[1] == 'W':
-                Width = int(line.split(' ')[-1].split('\n')[0])
-            if line.split(' ')[1] == 'hFov':
-                hFov = float(line.split(' ')[-1].split('\n')[0])
-            if line.split(' ')[1] == 'vFov':
-                vFov = float(line.split(' ')[-1].split('\n')[0])
-        elif line.startswith('end_header'):
-            break
-    contents = ply_fi.readlines()
-    vertex_infos = contents[:num_vertex]
-    face_infos = contents[num_vertex:]
-    verts = []
-    colors = []
-    faces = []
-    for v_info in vertex_infos:
-        str_info = [float(v) for v in v_info.split('\n')[0].split(' ')]
-        if len(str_info) == 6:
-            vx, vy, vz, r, g, b = str_info
-        else:
-            vx, vy, vz, r, g, b, hi = str_info
-        verts.append([vx, vy, vz])
-        colors.append([r, g, b, hi])
-    verts = np.array(verts)
-    try:
-        colors = np.array(colors)
-        colors[..., :3] = colors[..., :3]/255.
-    except:
-        import pdb
-        pdb.set_trace()
-
-    for f_info in face_infos:
-        _, v1, v2, v3 = [int(f) for f in f_info.split('\n')[0].split(' ')]
-        faces.append([v1, v2, v3])
-    faces = np.array(faces)
-
-
-    return verts, colors, faces, Height, Width, hFov, vFov
-
-
-class Canvas_view():
-    def __init__(self,
-                 fov,
-                 verts,
-                 faces,
-                 colors,
-                 canvas_size,
-                 factor=1,
-                 bgcolor='gray',
-                 proj='perspective',
-                 ):
-        self.canvas = scene.SceneCanvas(bgcolor=bgcolor, size=(canvas_size*factor, canvas_size*factor))
-        self.view = self.canvas.central_widget.add_view()
-        self.view.camera = 'perspective'
-        self.view.camera.fov = fov
-        self.mesh = visuals.Mesh(shading=None)
-        self.mesh.attach(Alpha(1.0))
-        self.view.add(self.mesh)
-        self.tr = self.view.camera.transform
-        self.mesh.set_data(vertices=verts, faces=faces, vertex_colors=colors[:, :3])
-        self.translate([0,0,0])
-        self.rotate(axis=[1,0,0], angle=180)
-        self.view_changed()
-
-    def translate(self, trans=[0,0,0]):
-        self.tr.translate(trans)
-
-    def rotate(self, axis=[1,0,0], angle=0):
-        self.tr.rotate(axis=axis, angle=angle)
-
-    def view_changed(self):
-        self.view.camera.view_changed()
-
-    def render(self):
-        return self.canvas.render()
-
-    def reinit_mesh(self, verts, faces, colors):
-        self.mesh.set_data(vertices=verts, faces=faces, vertex_colors=colors[:, :3])
-
-    def reinit_camera(self, fov):
-        self.view.camera.fov = fov
-        self.view.camera.view_changed()
-
-
-def output_3d_photo(verts, colors, faces, Height, Width, hFov, vFov, tgt_poses, video_traj_types, ref_pose,
-                    output_dir, ref_image, int_mtx, config, image, videos_poses, video_basename, original_H=None, original_W=None,
-                    border=None, depth=None, normal_canvas=None, all_canvas=None, mean_loc_depth=None):
-
-    cam_mesh = netx.Graph()
-    cam_mesh.graph['H'] = Height
-    cam_mesh.graph['W'] = Width
-    cam_mesh.graph['original_H'] = original_H
-    cam_mesh.graph['original_W'] = original_W
-    int_mtx_real_x = int_mtx[0] * Width
-    int_mtx_real_y = int_mtx[1] * Height
-    cam_mesh.graph['hFov'] = 2 * np.arctan((1. / 2.) * ((cam_mesh.graph['original_W']) / int_mtx_real_x[0]))
-    cam_mesh.graph['vFov'] = 2 * np.arctan((1. / 2.) * ((cam_mesh.graph['original_H']) / int_mtx_real_y[1]))
-    colors = colors[..., :3]
-
-    fov_in_rad = max(cam_mesh.graph['vFov'], cam_mesh.graph['hFov'])
-    fov = (fov_in_rad * 180 / np.pi)
-    print("fov: " + str(fov))
-    init_factor = 1
-    if config.get('anti_flickering') is True:
-        init_factor = 3
-    if (cam_mesh.graph['original_H'] is not None) and (cam_mesh.graph['original_W'] is not None):
-        canvas_w = cam_mesh.graph['original_W']
-        canvas_h = cam_mesh.graph['original_H']
-    else:
-        canvas_w = cam_mesh.graph['W']
-        canvas_h = cam_mesh.graph['H']
-    canvas_size = max(canvas_h, canvas_w)
-    if normal_canvas is None:
-        normal_canvas = Canvas_view(fov,
-                                    verts,
-                                    faces,
-                                    colors,
-                                    canvas_size=canvas_size,
-                                    factor=init_factor,
-                                    bgcolor='gray',
-                                    proj='perspective')
-    else:
-        normal_canvas.reinit_mesh(verts, faces, colors)
-        normal_canvas.reinit_camera(fov)
-    img = normal_canvas.render()
-    backup_img, backup_all_img, all_img_wo_bound = img.copy(), img.copy() * 0, img.copy() * 0
-    img = cv2.resize(img, (int(img.shape[1] / init_factor), int(img.shape[0] / init_factor)), interpolation=cv2.INTER_AREA)
-    if border is None:
-        border = [0, img.shape[0], 0, img.shape[1]]
-    H, W = cam_mesh.graph['H'], cam_mesh.graph['W']
-    if (cam_mesh.graph['original_H'] is not None) and (cam_mesh.graph['original_W'] is not None):
-        aspect_ratio = cam_mesh.graph['original_H'] / cam_mesh.graph['original_W']
-    else:
-        aspect_ratio = cam_mesh.graph['H'] / cam_mesh.graph['W']
-    if aspect_ratio > 1:
-        img_h_len = cam_mesh.graph['H'] if cam_mesh.graph.get('original_H') is None else cam_mesh.graph['original_H']
-        img_w_len = img_h_len / aspect_ratio
-        anchor = [0,
-                  img.shape[0],
-                  int(max(0, int((img.shape[1])//2 - img_w_len//2))),
-                  int(min(int((img.shape[1])//2 + img_w_len//2), (img.shape[1])-1))]
-    elif aspect_ratio <= 1:
-        img_w_len = cam_mesh.graph['W'] if cam_mesh.graph.get('original_W') is None else cam_mesh.graph['original_W']
-        img_h_len = img_w_len * aspect_ratio
-        anchor = [int(max(0, int((img.shape[0])//2 - img_h_len//2))),
-                  int(min(int((img.shape[0])//2 + img_h_len//2), (img.shape[0])-1)),
-                  0,
-                  img.shape[1]]
-    anchor = np.array(anchor)
-    plane_width = np.tan(fov_in_rad/2.) * np.abs(mean_loc_depth)
-    for video_pose, video_traj_type in zip(videos_poses, video_traj_types):
-        stereos = []
-        tops = []; buttoms = []; lefts = []; rights = []
-        for tp_id, tp in enumerate(video_pose):
-            rel_pose = np.linalg.inv(np.dot(tp, np.linalg.inv(ref_pose)))
-            axis, angle = transforms3d.axangles.mat2axangle(rel_pose[0:3, 0:3])
-            normal_canvas.rotate(axis=axis, angle=(angle*180)/np.pi)
-            normal_canvas.translate(rel_pose[:3,3])
-            new_mean_loc_depth = mean_loc_depth - float(rel_pose[2, 3])
-            if 'dolly' in video_traj_type:
-                new_fov = float((np.arctan2(plane_width, np.array([np.abs(new_mean_loc_depth)])) * 180. / np.pi) * 2)
-                normal_canvas.reinit_camera(new_fov)
-            else:
-                normal_canvas.reinit_camera(fov)
-            normal_canvas.view_changed()
-            img = normal_canvas.render()
-            img = cv2.GaussianBlur(img,(int(init_factor//2 * 2 + 1), int(init_factor//2 * 2 + 1)), 0)
-            img = cv2.resize(img, (int(img.shape[1] / init_factor), int(img.shape[0] / init_factor)), interpolation=cv2.INTER_AREA)
-            img = img[anchor[0]:anchor[1], anchor[2]:anchor[3]]
-            img = img[int(border[0]):int(border[1]), int(border[2]):int(border[3])]
-
-            if any(np.array(config['crop_border']) > 0.0):
-                H_c, W_c, _ = img.shape
-                o_t = int(H_c * config['crop_border'][0])
-                o_l = int(W_c * config['crop_border'][1])
-                o_b = int(H_c * config['crop_border'][2])
-                o_r = int(W_c * config['crop_border'][3])
-                img = img[o_t:H_c-o_b, o_l:W_c-o_r]
-                img = cv2.resize(img, (W_c, H_c), interpolation=cv2.INTER_CUBIC)
-
-            """
-            img = cv2.resize(img, (int(img.shape[1] / init_factor), int(img.shape[0] / init_factor)), interpolation=cv2.INTER_CUBIC)
-            img = img[anchor[0]:anchor[1], anchor[2]:anchor[3]]
-            img = img[int(border[0]):int(border[1]), int(border[2]):int(border[3])]
-
-            if config['crop_border'] is True:
-                top, buttom, left, right = find_largest_rect(img, bg_color=(128, 128, 128))
-                tops.append(top); buttoms.append(buttom); lefts.append(left); rights.append(right)
-            """
-            stereos.append(img[..., :3])
-            normal_canvas.translate(-rel_pose[:3,3])
-            normal_canvas.rotate(axis=axis, angle=-(angle*180)/np.pi)
-            normal_canvas.view_changed()
-        """
-        if config['crop_border'] is True:
-            atop, abuttom = min(max(tops), img.shape[0]//2 - 10), max(min(buttoms), img.shape[0]//2 + 10)
-            aleft, aright = min(max(lefts), img.shape[1]//2 - 10), max(min(rights), img.shape[1]//2 + 10)
-            atop -= atop % 2; abuttom -= abuttom % 2; aleft -= aleft % 2; aright -= aright % 2
-        else:
-            atop = 0; abuttom = img.shape[0] - img.shape[0] % 2; aleft = 0; aright = img.shape[1] - img.shape[1] % 2
-        """
-        atop = 0; abuttom = img.shape[0] - img.shape[0] % 2; aleft = 0; aright = img.shape[1] - img.shape[1] % 2
-        crop_stereos = []
-        for stereo in stereos:
-            crop_stereos.append((stereo[atop:abuttom, aleft:aright, :3] * 1).astype(np.uint8))
-            stereos = crop_stereos
-        clip = ImageSequenceClip(stereos, fps=config['fps'])
-        if isinstance(video_basename, list):
-            video_basename = video_basename[0]
-        clip.write_videofile(os.path.join(output_dir, video_basename + '_' + video_traj_type + '.mp4'), fps=config['fps'])
-
-
-
-    return normal_canvas, all_canvas
