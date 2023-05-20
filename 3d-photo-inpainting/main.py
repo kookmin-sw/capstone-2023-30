@@ -1,14 +1,13 @@
 import numpy as np
 import argparse
 import os
-from tqdm import tqdm
 import yaml
 import time
 from mesh import write_ply
 from utils import get_MiDaS_samples, read_MiDaS_depth
 import torch
 import cv2
-import imageio
+import imageio.v2 as imageio
 from networks import Inpaint_Color_Net, Inpaint_Depth_Net, Inpaint_Edge_Net
 from MiDaS.run import run_depth
 from boostmonodepth_utils import run_boostmonodepth
@@ -16,11 +15,30 @@ from MiDaS.monodepth_net import MonoDepthNet
 import MiDaS.MiDaS_utils as MiDaS_utils
 from bilateral_filtering import sparse_bilateral_filtering
 
+
+def str2bool(targ):
+    if isinstance(targ, bool):
+        return True
+    if targ.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif targ.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', type=str, default='argument.yml',help='Configure of post processing')
 parser.add_argument('--image_name', type=str, default='', help='target image name in ./image directory')
+parser.add_argument('--save_ldi', type=str, default='f',help='Make LDI or not')
+parser.add_argument('--save_ply', type=str, default='f',help='Make PLY or not')
 args = parser.parse_args()
 config = yaml.full_load(open(args.config, 'r'))
+
+# Check make ldi or not
+config['save_ldi'] = str2bool(args.save_ldi)
+
+# Check make ply or not
+config['save_ply'] = str2bool(args.save_ply)
 
 os.makedirs(config['mesh_folder'], exist_ok=True)
 os.makedirs(config['video_folder'], exist_ok=True)
@@ -33,12 +51,14 @@ if isinstance(config["gpu_ids"], int) and (config["gpu_ids"] >= 0):
 else:
     device = "cpu"
 
+# Set target image name
+if args.image_name != '':
+    config['specific'] = args.image_name
+
 print(f"running on device {device}")
 
 # 추가 코드: 시간 측정
 start_time = time.time()
-if args.image_name != '':
-    config['specific'] = args.image_name
 
 depth = None
 sample = sample_list[0]
