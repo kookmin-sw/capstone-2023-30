@@ -4,13 +4,20 @@ import glob
 import numpy as np
 import imageio
 from MiDaS.MiDaS_utils import write_depth
+import platform
 
 BOOST_BASE = 'BoostingMonocularDepth'
 
 BOOST_INPUTS = 'inputs'
 BOOST_OUTPUTS = 'outputs'
 
+# Variable for OS Checking.
+syscall_delete = {'Windows': 'del', 'Other': 'rm'}
+syscall_copy = {'Windows': 'copy', 'Other': 'cp'}
+
 def run_boostmonodepth(img_names, src_folder, depth_folder):
+    # Check User OS.
+    user_os = check_os()
 
     if not isinstance(img_names, list):
         img_names = [img_names]
@@ -23,7 +30,8 @@ def run_boostmonodepth(img_names, src_folder, depth_folder):
     for img_name in img_names:
         base_name = os.path.basename(img_name)
         tgt_name = os.path.join(BOOST_BASE, BOOST_INPUTS, base_name)
-        os.system(f'copy {img_name} {tgt_name}')
+        # Copy image/image_name to boost~~~/inputs/.
+        os.system(f'{syscall_copy[user_os]} {img_name} {tgt_name}')
 
         # keep only the file name here.
         # they save all depth as .png file
@@ -45,13 +53,15 @@ def run_boostmonodepth(img_names, src_folder, depth_folder):
         write_depth(os.path.join(depth_folder, tgt_name.replace('.png', '')), depth)
 
 def clean_folder(folder, img_exts=['.png', '.jpg', '.npy']):
+    # Check User OS.
+    user_os = check_os()
 
     for img_ext in img_exts:
         paths_to_check = os.path.join(folder, f'*{img_ext}')
         if len(glob.glob(paths_to_check)) == 0:
             continue
         print(paths_to_check)
-        os.system(f'del {paths_to_check}')
+        os.system(f'{syscall_delete[user_os]} {paths_to_check}')
 
 def resize_depth(depth, width, height):
     """Resize numpy (or image read by imageio) depth map
@@ -66,3 +76,6 @@ def resize_depth(depth, width, height):
     """
     depth = cv2.blur(depth, (3, 3))
     return cv2.resize(depth, (width, height), interpolation=cv2.INTER_AREA)
+
+def check_os():
+    return 'Windows' if platform.system() == 'Windows' else 'Other'
