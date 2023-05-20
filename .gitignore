@@ -88,3 +88,11 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+# Inpainting
+#
+# Igonore Cache files and python cache.
+3d-photo-inpainting/**/__pycache__/*
+3d-photo-inpainting/depth/*
+3d-photo-inpainting/image/*
+3d-photo-inpainting/mesh/*
