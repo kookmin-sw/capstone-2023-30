@@ -21,6 +21,8 @@ final class MainViewController: UIViewController {
     //
     private let picker = UIImagePickerController()
 
+    private var selectedFilterIndex: Int?
+
     //MARK: UI Components
 
     private let currentFilterLabel: BasePaddingLabel = {
@@ -109,6 +111,13 @@ final class MainViewController: UIViewController {
         render()
         setShutterButton()
         checkCameraPermission()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        DispatchQueue.global().async {
+            self.session?.startRunning()
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -276,9 +285,11 @@ extension MainViewController {
     @objc private func didTapFilterButton() {
         let filterVC = FilterViewController()
         filterVC.modalPresentationStyle = .fullScreen
-        filterVC.completion = { filter in
+        filterVC.completion = { filter, index in
+            self.selectedFilterIndex = index
             self.currentFilterLabel.text = filter.name
         }
+        filterVC.selectedIndex = selectedFilterIndex
         self.present(filterVC, animated: true)
     }
 
@@ -294,7 +305,7 @@ extension MainViewController {
 extension MainViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            print(image.size)
+            makePLYwithImage(image: image, error: nil)
         }
         dismiss(animated: true)
     }
@@ -308,14 +319,25 @@ extension MainViewController: AVCapturePhotoCaptureDelegate {
         else {
             return
         }
+//        image = image.resize(to: CGSize(width: image.size.height, height: image.size.width))
+        makePLYwithImage(image: image, error: error)
+    }
 
+    private func makePLYwithImage(image: UIImage, error: Error?) {
+//        let image = image.resize(to: CGSize(width: image.size.height, height: image.size.width))
         session?.stopRunning()
 
         // 네트워크 통신 시작 ! 보내기 비동기 보내고 lottie 돌리기
         let width = Int(image.size.width)
         let height = Int(image.size.height)
         print(width, height)
-        guard let url = URL(string: "https://3qt14ezkgb.execute-api.ap-northeast-2.amazonaws.com/img/test/request/\(width)x\(height)?img_name=\(arc4random()).jpeg") else {
+//        guard let url = URL(string: "https://3qt14ezkgb.execute-api.ap-northeast-2.amazonaws.com/img/test/request/\(width)x\(height)?img_name=\(arc4random()).jpeg") else {
+//            print("url fail")
+//            return
+//
+//        }
+
+        guard let url = URL(string: "http://angheng.iptime.org:1398/request/?img_name=\(arc4random()).jpeg") else {
             print("url fail")
             return
 
@@ -331,8 +353,14 @@ extension MainViewController: AVCapturePhotoCaptureDelegate {
 
         Task {
             do {
-                let (data, response) = try await URLSession
-                    .shared
+
+
+                let sessionConfig = URLSessionConfiguration.default
+                sessionConfig.timeoutIntervalForRequest = .greatestFiniteMagnitude
+                sessionConfig.timeoutIntervalForResource = .greatestFiniteMagnitude
+                let session = URLSession(configuration: sessionConfig)
+
+                let (data, response) = try await session
                     .upload(for: urlRequest, from: jpegImage)
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode,
                       responseCode == 200 else {
@@ -344,18 +372,25 @@ extension MainViewController: AVCapturePhotoCaptureDelegate {
                     }
                     return
                 }
-                let decoder = JSONDecoder()
-                let baseModelData = try decoder.decode(
-                    BaseModel<Int>.self,
-                    from: data
-                )
-                print(baseModelData)
+
+                print("🚀🚀🚀🚀🚀🚀🚀")
+                dump(data)
+                let directoryURL = FileManager
+                    .default
+                    .urls(for: .documentDirectory,
+                          in: .userDomainMask)[0]
+                let fileURL = URL(fileURLWithPath: "myPLY", relativeTo: directoryURL).appendingPathExtension("ply")
+
+                try? data.write(to: fileURL)
+                print("File saved: \(fileURL.absoluteURL)")
+
                 LoadingIndicator.hideLoading()
-                self.view.window?.rootViewController = SceneViewController()
-                self.view.window?.makeKeyAndVisible()
+                let viewController = SceneViewController()
+                viewController.fileURL = fileURL
+                self.navigationController?.pushViewController(viewController, animated: true)
 
             } catch {
-                print(error)
+                print(error.localizedDescription)
             }
         }
 

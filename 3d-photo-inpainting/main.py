@@ -40,6 +40,11 @@ config['save_ldi'] = str2bool(args.save_ldi)
 # Check make ply or not
 config['save_ply'] = str2bool(args.save_ply)
 
+# Set target image name
+if args.image_name != '':
+    config['specific'] = args.image_name
+
+
 os.makedirs(config['mesh_folder'], exist_ok=True)
 os.makedirs(config['video_folder'], exist_ok=True)
 os.makedirs(config['depth_folder'], exist_ok=True)
@@ -50,11 +55,6 @@ if isinstance(config["gpu_ids"], int) and (config["gpu_ids"] >= 0):
     device = config["gpu_ids"]
 else:
     device = "cpu"
-
-# Set target image name
-if args.image_name != '':
-    config['specific'] = args.image_name
-
 print(f"running on device {device}")
 
 # 추가 코드: 시간 측정
