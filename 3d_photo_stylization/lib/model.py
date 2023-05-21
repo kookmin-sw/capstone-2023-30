@@ -216,7 +216,7 @@ class Model3D(nn.Module):
 
                 from PIL import Image
                 img = Image.fromarray(pred_rgb_0, 'RGB')
-                img.save('stylized1.jpg')
+                img.save(f'stylized/{input_dict["name"]}.jpg')
                 
                 sys.exit(0)
                 ######################################
