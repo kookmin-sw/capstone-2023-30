@@ -21,6 +21,8 @@ final class MainViewController: UIViewController {
     //
     private let picker = UIImagePickerController()
 
+    private var selectedFilterIndex: Int?
+
     //MARK: UI Components
 
     private let currentFilterLabel: BasePaddingLabel = {
@@ -283,9 +285,11 @@ extension MainViewController {
     @objc private func didTapFilterButton() {
         let filterVC = FilterViewController()
         filterVC.modalPresentationStyle = .fullScreen
-        filterVC.completion = { filter in
+        filterVC.completion = { filter, index in
+            self.selectedFilterIndex = index
             self.currentFilterLabel.text = filter.name
         }
+        filterVC.selectedIndex = selectedFilterIndex
         self.present(filterVC, animated: true)
     }
 
@@ -301,7 +305,7 @@ extension MainViewController {
 extension MainViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            print(image.size)
+            makePLYwithImage(image: image, error: nil)
         }
         dismiss(animated: true)
     }
@@ -315,7 +319,12 @@ extension MainViewController: AVCapturePhotoCaptureDelegate {
         else {
             return
         }
+//        image = image.resize(to: CGSize(width: image.size.height, height: image.size.width))
+        makePLYwithImage(image: image, error: error)
+    }
 
+    private func makePLYwithImage(image: UIImage, error: Error?) {
+//        let image = image.resize(to: CGSize(width: image.size.height, height: image.size.width))
         session?.stopRunning()
 
         // 네트워크 통신 시작 ! 보내기 비동기 보내고 lottie 돌리기

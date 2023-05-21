@@ -10,7 +10,9 @@ import SceneKit
 
 final class SceneViewController: UIViewController {
 
-    private let sceneView = SCNView()
+    private let sceneView = SCNView().then {
+        $0.contentMode = .scaleAspectFill
+    }
 
     var fileURL: URL?
 
@@ -57,8 +59,8 @@ extension SceneViewController {
             return
         }
         sceneView.allowsCameraControl = true
-        sceneView.defaultCameraController.maximumVerticalAngle = 5
-        sceneView.defaultCameraController.maximumHorizontalAngle = 5
+        sceneView.cameraControlConfiguration.panSensitivity = 0.001
+        sceneView.cameraControlConfiguration.rotationSensitivity = 0.001
         let scene = try? SCNScene(url: fileURL)
 
 //        let scene = SCNScene(named: "IMG_9274.ply")
@@ -70,7 +72,7 @@ extension SceneViewController {
         // 3: Place camera
         
         cameraNode.camera?.projectionDirection = .horizontal // axis
-        cameraNode.camera?.fieldOfView = 60 // fov
+        cameraNode.camera?.fieldOfView = 43 // fov
 //        cameraNode.transform = SCNMatrix4() // transform
 //        cameraNode.
         // -0.01003696
@@ -103,11 +105,11 @@ extension SceneViewController {
 //        scene?.rootNode.addChildNode(node)
 
         // 5: Adding light to scene
-//        let lightNode = SCNNode()
-//        lightNode.light = SCNLight()
-//        lightNode.light?.type = .omni
-//        lightNode.position = SCNVector3(x: 0, y: 10, z: 35)
-//        scene?.rootNode.addChildNode(lightNode)
+        let lightNode = SCNNode()
+        lightNode.light = SCNLight()
+        lightNode.light?.type = .omni
+        lightNode.position = SCNVector3(x: 0, y: 10, z: 35)
+        scene?.rootNode.addChildNode(lightNode)
 
         // 6: Creating and adding ambien light to scene
 //        let ambientLightNode = SCNNode()
