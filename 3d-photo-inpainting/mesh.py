@@ -1966,7 +1966,7 @@ def write_ply(image,
 
         print('Staring make LDI.')
         import scipy.io as sio
-        sio.savemat('LDI.mat', {'uv': c, 'z': depthlist, 'rgb': colorlist, 'h': [H], 'w': [W], 'full_h': [ext_H],
+        sio.savemat(f'{ply_name.split(".")[0]}.mat', {'uv': c, 'z': depthlist, 'rgb': colorlist, 'h': [H], 'w': [W], 'full_h': [ext_H],
                                 'full_w': [ext_W], 'fov': [53.1]})
         print('Making LDI Completed.')
     
