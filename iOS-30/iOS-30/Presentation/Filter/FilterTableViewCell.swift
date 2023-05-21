@@ -11,7 +11,16 @@ import Then
 
 final class FilterTableViewCell: UITableViewCell {
 
-    private var selectedFilter = 0
+    override var isSelected: Bool {
+        didSet {
+            if isSelected {
+                contentView.layer.borderWidth = 2
+                contentView.layer.borderColor = UIColor.lightGray.cgColor
+            } else {
+                contentView.layer.borderWidth = 0
+            }
+        }
+    }
 
     private lazy var filterImageView = UIImageView()
 
@@ -32,12 +41,6 @@ final class FilterTableViewCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        if selected {
-            contentView.layer.borderWidth = 2
-            contentView.layer.borderColor = UIColor.lightGray.cgColor
-        } else {
-            contentView.layer.borderWidth = 0
-        }
     }
 
     private func setStyle() {

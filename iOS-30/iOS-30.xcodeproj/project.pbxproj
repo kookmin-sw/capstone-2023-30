@@ -12,7 +12,7 @@
 		B58DD4A029F656D8000BD382 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = B58DD49F29F656D8000BD382 /* SnapKit */; };
 		B58DD4A329F656E1000BD382 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = B58DD4A229F656E1000BD382 /* Then */; };
 		B58DD4A629F657BD000BD382 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58DD4A529F657BD000BD382 /* Filter.swift */; };
-		B58DD4A829F65881000BD382 /* UIImage+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58DD4A729F65881000BD382 /* UIImage+.swift */; };
+		B58DD4A829F65881000BD382 /* UIImageLiterals.swift in Sources */ = {isa = PBXBuildFile; fileRef = B58DD4A729F65881000BD382 /* UIImageLiterals.swift */; };
 		B598BF5A29D6BCA500FDEF04 /* EndPointable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B598BF5929D6BCA500FDEF04 /* EndPointable.swift */; };
 		B598BF5C29D6C08600FDEF04 /* APIEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B598BF5B29D6C08600FDEF04 /* APIEnvironment.swift */; };
 		B598BF6029D6D3F800FDEF04 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B598BF5F29D6D3F800FDEF04 /* LoadingIndicator.swift */; };
@@ -24,6 +24,7 @@
 		B5AEB24C29CB735800B95B04 /* BasePaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AEB24B29CB735800B95B04 /* BasePaddingLabel.swift */; };
 		B5C0BDC929C9F8CE00372709 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C0BDC829C9F8CE00372709 /* FilterViewController.swift */; };
 		B5C0BDD429CB189000372709 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C0BDD329CB189000372709 /* MainViewController.swift */; };
+		B5D06E1E2A175A4100048C72 /* UIImage+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D06E1D2A175A4100048C72 /* UIImage+.swift */; };
 		B5E4590129BCDEA600237B1F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E4590029BCDEA600237B1F /* AppDelegate.swift */; };
 		B5E4590329BCDEA600237B1F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E4590229BCDEA600237B1F /* SceneDelegate.swift */; };
 		B5E4590A29BCDEA800237B1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5E4590929BCDEA800237B1F /* Assets.xcassets */; };
@@ -47,7 +48,7 @@
 		B58DD49A29F6565A000BD382 /* FilterTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterTableViewCell.swift; sourceTree = "<group>"; };
 		B58DD49C29F65664000BD382 /* NSObject+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSObject+.swift"; sourceTree = "<group>"; };
 		B58DD4A529F657BD000BD382 /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
-		B58DD4A729F65881000BD382 /* UIImage+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
+		B58DD4A729F65881000BD382 /* UIImageLiterals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageLiterals.swift; sourceTree = "<group>"; };
 		B598BF5929D6BCA500FDEF04 /* EndPointable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndPointable.swift; sourceTree = "<group>"; };
 		B598BF5B29D6C08600FDEF04 /* APIEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEnvironment.swift; sourceTree = "<group>"; };
 		B598BF5F29D6D3F800FDEF04 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
@@ -58,6 +59,7 @@
 		B5AEB24B29CB735800B95B04 /* BasePaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePaddingLabel.swift; sourceTree = "<group>"; };
 		B5C0BDC829C9F8CE00372709 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
 		B5C0BDD329CB189000372709 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		B5D06E1D2A175A4100048C72 /* UIImage+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+.swift"; sourceTree = "<group>"; };
 		B5E458FD29BCDEA600237B1F /* iOS-30.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS-30.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5E4590029BCDEA600237B1F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B5E4590229BCDEA600237B1F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -143,7 +145,7 @@
 				B5E459E629C1D39300237B1F /* Presentation */,
 				B5E459E529C1D38C00237B1F /* Network */,
 				B5E459E429C1D38400237B1F /* Global */,
-				B58DD4A729F65881000BD382 /* UIImage+.swift */,
+				B58DD4A729F65881000BD382 /* UIImageLiterals.swift */,
 			);
 			path = "iOS-30";
 			sourceTree = "<group>";
@@ -196,6 +198,7 @@
 				B5E459EB29C1D53400237B1F /* UIView+Extension.swift */,
 				B5AEB24829CB5C1300B95B04 /* UIViewController+Extension.swift */,
 				B58DD49C29F65664000BD382 /* NSObject+.swift */,
+				B5D06E1D2A175A4100048C72 /* UIImage+.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -359,12 +362,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				B598BF6029D6D3F800FDEF04 /* LoadingIndicator.swift in Sources */,
+				B5D06E1E2A175A4100048C72 /* UIImage+.swift in Sources */,
 				B5AEB24929CB5C1300B95B04 /* UIViewController+Extension.swift in Sources */,
 				B5E459F529C1D96000237B1F /* MainService.swift in Sources */,
 				B598BF5A29D6BCA500FDEF04 /* EndPointable.swift in Sources */,
 				B5E45A0429C1DECF00237B1F /* NetworkRequest.swift in Sources */,
 				B5C0BDC929C9F8CE00372709 /* FilterViewController.swift in Sources */,
-				B58DD4A829F65881000BD382 /* UIImage+.swift in Sources */,
+				B58DD4A829F65881000BD382 /* UIImageLiterals.swift in Sources */,
 				B5E459E929C1D41500237B1F /* BaseViewController.swift in Sources */,
 				B5E45A0629C1DFEB00237B1F /* NetworkStatus.swift in Sources */,
 				B598BF6929D7D90000FDEF04 /* SceneViewController.swift in Sources */,

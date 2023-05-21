@@ -13,7 +13,8 @@ final class FilterViewController: UIViewController {
 
     private let tableView = UITableView()
 
-    var completion: ((Filter) -> Void)?
+    var completion: ((Filter, Int) -> Void)?
+    var selectedIndex: Int?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,7 +49,7 @@ extension FilterViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         makeVibrate(degree: .medium)
         let filter = dummy[indexPath.item]
-        completion?(filter)
+        completion?(filter, indexPath.item)
         dismiss(animated: true)
     }
 }
@@ -56,7 +57,9 @@ extension FilterViewController: UITableViewDelegate {
 extension FilterViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: FilterTableViewCell.className, for: indexPath) as? FilterTableViewCell else { return UITableViewCell() }
-
+        if indexPath.item == self.selectedIndex {
+            cell.isSelected = true
+        }
         cell.configureCell(filter: dummy[indexPath.item])
         return cell
     }
