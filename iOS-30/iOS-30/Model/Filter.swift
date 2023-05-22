@@ -10,20 +10,21 @@ import UIKit
 struct Filter {
     let image: UIImage
     let name: String
-    let description: String
+    let filterNum: Int
 }
 
 
 extension Filter {
     static func dummy() -> [Filter] {
         return [
-            Filter(image: .filter_1, name: "필터 1", description: "설명1"),
-            Filter(image: .filter_2, name: "필터 2", description: "설명2"),
-            Filter(image: .filter_3, name: "필터 3", description: "설명3"),
-            Filter(image: .filter_4, name: "필터 4", description: "설명4"),
-            Filter(image: .filter_5, name: "필터 5", description: "설명5"),
-            Filter(image: .filter_6, name: "필터 6", description: "설명6"),
-            Filter(image: .filter_7, name: "필터 7", description: "설명7")
+            Filter(image: UIImage(systemName: "x.square")!, name: "No filter", filterNum: -1),
+            Filter(image: .filter3, name: "깃털 무늬", filterNum: 3),
+            Filter(image: .filter14, name: "고흐의 별이 빛나는 밤", filterNum: 14),
+            Filter(image: .filter15, name: "은하", filterNum: 15),
+            Filter(image: .filter19, name: "가나가와 해변의 높은 파도", filterNum: 19),
+            Filter(image: .filter30, name: "Collioure 항구", filterNum: 30),
+            Filter(image: .filter66, name: "Landscape with Goats", filterNum: 66),
+            Filter(image: .filter86, name: "Voo de Aves", filterNum: 86)
         ]
     }
 }

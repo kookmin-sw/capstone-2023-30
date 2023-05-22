@@ -9,11 +9,11 @@ import UIKit.UIImage
 
 extension UIImage {
 
-    static var filter_1: UIImage { UIImage(named: "1")! }
-    static var filter_2: UIImage { UIImage(named: "2")! }
-    static var filter_3: UIImage { UIImage(named: "3")! }
-    static var filter_4: UIImage { UIImage(named: "4")! }
-    static var filter_5: UIImage { UIImage(named: "5")! }
-    static var filter_6: UIImage { UIImage(named: "6")! }
-    static var filter_7: UIImage { UIImage(named: "7")! }
+    static var filter3: UIImage { UIImage(named: "filter3")! }
+    static var filter14: UIImage { UIImage(named: "filter14")! }
+    static var filter15: UIImage { UIImage(named: "filter15")! }
+    static var filter19: UIImage { UIImage(named: "filter19")! }
+    static var filter30: UIImage { UIImage(named: "filter30")! }
+    static var filter66: UIImage { UIImage(named: "filter66")! }
+    static var filter86: UIImage { UIImage(named: "filter86")! }
 }
