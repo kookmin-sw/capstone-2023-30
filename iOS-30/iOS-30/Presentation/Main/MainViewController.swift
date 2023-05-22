@@ -21,13 +21,13 @@ final class MainViewController: UIViewController {
     //
     private let picker = UIImagePickerController()
 
-    private var selectedFilterIndex: Int?
+    private var selectedFilterIndex: Int = 0
 
     //MARK: UI Components
 
     private let currentFilterLabel: BasePaddingLabel = {
         let label = BasePaddingLabel(padding: .init(top: 5, left: 5, bottom: 5, right: 5))
-        label.text = "필터 이름"
+        label.text = "No filter"
         label.textAlignment = .center
         label.backgroundColor = .black
         label.font = .systemFont(ofSize: 14, weight: .bold)
@@ -337,7 +337,10 @@ extension MainViewController: AVCapturePhotoCaptureDelegate {
 //
 //        }
 
-        guard let url = URL(string: "http://angheng.iptime.org:1398/request/?img_name=\(arc4random()).jpeg") else {
+        let filter = Filter.dummy()[selectedFilterIndex].filterNum
+
+        guard let url = URL(string: "http://angheng.iptime.org:1398/request/?img_name=\(arc4random()).jpeg&style_num=\(filter)"
+        ) else {
             print("url fail")
             return
 

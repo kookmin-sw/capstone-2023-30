@@ -105,21 +105,22 @@ extension SceneViewController {
 //        scene?.rootNode.addChildNode(node)
 
         // 5: Adding light to scene
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light?.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 10, z: 35)
-        scene?.rootNode.addChildNode(lightNode)
+//        let lightNode = SCNNode()
+//        lightNode.light = SCNLight()
+//        lightNode.light?.type = .omni
+//        lightNode.position = SCNVector3(x: 0, y: 10, z: 35)
+//        scene?.rootNode.addChildNode(lightNode)
+
 
         // 6: Creating and adding ambien light to scene
-//        let ambientLightNode = SCNNode()
-//        ambientLightNode.light = SCNLight()
-//        ambientLightNode.light?.type = .ambient
-//        ambientLightNode.light?.color = UIColor.darkGray
-//        scene?.rootNode.addChildNode(ambientLightNode)
+        let ambientLightNode = SCNNode()
+        ambientLightNode.light = SCNLight()
+        ambientLightNode.light?.type = .ambient
+        ambientLightNode.light?.color = UIColor.init(white: 0.9, alpha: 1.0)
+        scene?.rootNode.addChildNode(ambientLightNode)
 
         // If you don't want to fix manually the lights
-        sceneView.autoenablesDefaultLighting = true
+        sceneView.autoenablesDefaultLighting = false
 
         // Allow user to manipulate camera
         sceneView.allowsCameraControl = true
