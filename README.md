@@ -30,9 +30,30 @@ https://user-images.githubusercontent.com/60292150/229364413-b2daf76c-d193-478a-
 |    구현 내용    |   스크린샷   |
 | :-------------: | :----------: |
 | Model Output .ply | <img width="1218" alt="image" src="https://user-images.githubusercontent.com/60292150/229364361-6c98b412-be77-4858-a345-c72e5f45806f.png"> |
-| 3D View | <img width="442" alt="image" src="https://user-images.githubusercontent.com/60292150/229364286-6115c1b8-2edf-402a-bfba-3a8d8c5d1e1e.png"> |
-### 시연 영상
-https://user-images.githubusercontent.com/60292150/229363755-604160b0-ceaf-42ac-a765-b999c3dc5bc7.mp4
+| 3D View | ![image](https://github.com/kookmin-sw/capstone-2023-30/assets/60292150/2bc5c047-ea44-446a-956a-556340534bfa) |
+
+## A-Z 시연 영상
+🛑 용량상의 문제로 YouTube링크 첨부: [시연 영상](https://www.youtube.com/watch?v=Tjouzsz71u0)
+
+## 사진 별 결과 영상
+### 1. 
+
+![image](https://github.com/kookmin-sw/capstone-2023-30/assets/60292150/81adb795-f169-4779-91d9-4d02839acd2d)
+
+
+[스타일 입힌 결과물](https://youtube.com/shorts/o9oyv6CwMzU?feature=share)
+
+[스타일 없이 3D Mesh](https://youtube.com/shorts/mc2BVlg7rIs?feature=share)
+
+### 2.
+
+![image](https://github.com/kookmin-sw/capstone-2023-30/assets/60292150/7ae8c06c-8609-4ecb-b5dd-fec0a248068a)
+
+
+[스타일 입힌 결과물](https://youtube.com/shorts/INrQ50k0xZY?feature=share)
+
+[스타일 없이 3D Mesh](https://youtube.com/shorts/EeCh-AR4EDM?feature=share)
+
 
 
 
