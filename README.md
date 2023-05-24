@@ -1,4 +1,4 @@
-# 나만의 3D 사진 만들기
+# SPRINTER: Stylized Point cloud Rendering & INTERaction service
   
   
   
