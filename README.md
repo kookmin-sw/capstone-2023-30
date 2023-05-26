@@ -70,7 +70,8 @@ https://user-images.githubusercontent.com/60292150/229364413-b2daf76c-d193-478a-
   
   
 # 사용법  
-1. 어플을 다운받는다(https://apps.apple.com/kr/app/testflight/id899247664 사이트에서 심사 중, 심사 전에도 초대를 요청하면 테스트 가능).  
-2. 어플을 실행하고, 사진을 입력하고, 스타일을 고른다.
-3. 생성된 결과물을 상하좌우로 슬라이드해서 즐긴다.
+1. Testflight(Apple에서 앱을 테스트할 수 있는 플랫폼)을 다운받는다(https://apps.apple.com/kr/app/testflight/id899247664). 
+2. https://testflight.apple.com/join/GkKusTfN 해당 링크를 통해 어플을 다운받는다.
+3. 어플을 실행하고, 사진을 입력하고, 스타일을 고른다.
+4. 생성된 결과물을 상하좌우로 슬라이드해서 즐긴다.
 
